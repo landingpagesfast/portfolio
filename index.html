@@ -1,150 +1,1272 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landing Pages by LandingPagesFast | Gyms Yoga Tutors Salons</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            line-height: 1.6; 
-            color: #333; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        h1 { 
-            text-align: center; 
-            color: white; 
-            font-size: 2.5em; 
-            margin-bottom: 10px; 
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        .tagline { 
-            text-align: center; 
-            color: white; 
-            font-size: 1.2em; 
-            margin-bottom: 40px; 
-            opacity: 0.9;
-        }
-        .pricing { 
-            text-align: center; 
-            color: white; 
-            font-size: 1.5em; 
-            margin-bottom: 50px; 
-            background: rgba(255,255,255,0.1); 
-            padding: 20px; 
-            border-radius: 15px;
-        }
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
-            gap: 25px; 
-            margin-bottom: 40px;
-        }
-        .card { 
-            background: white; 
-            border-radius: 20px; 
-            padding: 25px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .card:hover { 
-            transform: translateY(-10px); 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-        .card h3 { 
-            color: #667eea; 
-            margin-bottom: 15px; 
-            font-size: 1.4em;
-        }
-        .demo-btn { 
-            display: inline-block; 
-            background: linear-gradient(45deg, #667eea, #764ba2); 
-            color: white; 
-            padding: 12px 25px; 
-            text-decoration: none; 
-            border-radius: 50px; 
-            font-weight: bold; 
-            margin-top: 15px; 
-            transition: all 0.3s;
-        }
-        .demo-btn:hover { 
-            transform: scale(1.05); 
-            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
-        }
-        .whatsapp-cta { 
-            text-align: center; 
-            margin-top: 40px; 
-            padding: 20px;
-        }
-        .whatsapp-btn { 
-            background: #25D366; 
-            color: white; 
-            padding: 15px 40px; 
-            font-size: 1.2em; 
-            border-radius: 50px; 
-            text-decoration: none; 
-            display: inline-block;
-        }
-        @media (max-width: 768px) {
-            h1 { font-size: 2em; }
-            .grid { grid-template-columns: 1fr; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LandingPagesFast – Custom 3D Landing Pages $100-$500</title>
+  <meta name="description" content="Premium 3D landing pages for $100-$500. 7 live demos. WhatsApp instant quotes.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <style>
+    :root {
+      --bg: #06080c;
+      --bg-alt: #0c1018;
+      --fg: #f0f4f8;
+      --muted: #6b7a8f;
+      --accent: #00ffd5;
+      --accent-dim: #00c4a8;
+      --gold: #ffb800;
+      --card: rgba(12, 16, 24, 0.8);
+      --border: rgba(0, 255, 213, 0.15);
+      --glow: 0 0 40px rgba(0, 255, 213, 0.3);
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    html { scroll-behavior: smooth; }
+    
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    
+    .font-display { font-family: 'Syne', sans-serif; }
+    
+    /* Canvas layers */
+    .canvas-layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .canvas-interactive { pointer-events: auto; }
+    
+    /* Sections */
+    section {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 20px;
+    }
+    
+    /* Hero */
+    #hero {
+      height: 100vh;
+      padding: 0;
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 20;
+      text-align: center;
+      max-width: 900px;
+      padding: 0 20px;
+    }
+    
+    .hero-title {
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--fg) 0%, var(--accent) 50%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .hero-sub {
+      font-size: clamp(1rem, 3vw, 1.5rem);
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+    
+    .hero-price {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, rgba(0, 255, 213, 0.1), rgba(255, 184, 0, 0.1));
+      border: 1px solid var(--border);
+      padding: 12px 24px;
+      border-radius: 100px;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
+    }
+    
+    .hero-price span { color: var(--accent); }
+    .hero-price strong { color: var(--gold); }
+    
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #25d366, #128c7e);
+      color: white;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+    }
+    
+    .cta-btn:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 30px rgba(37, 211, 102, 0.5);
+    }
+    
+    /* Portfolio Grid */
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+      max-width: 1400px;
+      width: 100%;
+    }
+    
+    .demo-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .demo-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0, 255, 213, 0.05), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .demo-card:hover::before { opacity: 1; }
+    
+    .demo-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      border-color: var(--accent);
+      box-shadow: var(--glow);
+    }
+    
+    .demo-thumb {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, var(--bg-alt), var(--bg));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .demo-thumb::after {
+      content: 'View Demo';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 255, 213, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg);
+      font-weight: 600;
+      font-size: 1.1rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .demo-card:hover .demo-thumb::after { opacity: 1; }
+    
+    .demo-info { padding: 24px; }
+    
+    .demo-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .demo-price {
+      color: var(--gold);
+      font-size: 1rem;
+      background: rgba(255, 184, 0, 0.1);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+    
+    .demo-desc {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    
+    /* Pricing Section */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      width: 100%;
+    }
+    
+    .price-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px 30px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+    
+    .price-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-5px);
+    }
+    
+    .price-card.featured {
+      border-color: var(--gold);
+      background: linear-gradient(180deg, rgba(255, 184, 0, 0.05), var(--card));
+    }
+    
+    .price-badge {
+      position: absolute;
+      top: 15px;
+      right: -30px;
+      background: var(--gold);
+      color: var(--bg);
+      padding: 5px 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      transform: rotate(45deg);
+    }
+    
+    .price-tier {
+      font-size: 0.9rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+    
+    .price-amount {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: var(--fg);
+      margin-bottom: 8px;
+    }
+    
+    .price-amount::before { content: '$'; font-size: 2rem; vertical-align: top; }
+    
+    .price-desc {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+    
+    .price-features {
+      list-style: none;
+      text-align: left;
+      margin-bottom: 24px;
+    }
+    
+    .price-features li {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .price-features li::before {
+      content: '✓';
+      color: var(--accent);
+      font-weight: bold;
+    }
+    
+    /* Features Ring */
+    .features-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      max-width: 1000px;
+    }
+    
+    .feature-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+      width: 200px;
+      transition: all 0.3s ease;
+    }
+    
+    .feature-item:hover {
+      border-color: var(--accent);
+      transform: translateY(-5px);
+    }
+    
+    .feature-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 16px;
+      background: linear-gradient(135deg, rgba(0, 255, 213, 0.2), rgba(0, 255, 213, 0.05));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    
+    .feature-title { font-weight: 600; margin-bottom: 8px; }
+    .feature-desc { color: var(--muted); font-size: 0.85rem; }
+    
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 30px;
+      max-width: 1000px;
+      width: 100%;
+      text-align: center;
+    }
+    
+    .stat-item {
+      padding: 30px;
+    }
+    
+    .stat-num {
+      font-size: 4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .stat-label {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-top: 8px;
+    }
+    
+    /* Testimonials */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      width: 100%;
+    }
+    
+    .testimonial-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 30px;
+      position: relative;
+    }
+    
+    .testimonial-text {
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+    
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .testimonial-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--gold));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--bg);
+    }
+    
+    .testimonial-name { font-weight: 600; }
+    .testimonial-role { color: var(--muted); font-size: 0.85rem; }
+    
+    /* Footer CTA */
+    .mega-cta {
+      text-align: center;
+      max-width: 800px;
+    }
+    
+    .mega-cta h2 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+    }
+    
+    /* Scroll indicator */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(10px); }
+    }
+    
+    .scroll-indicator svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--accent);
+    }
+    
+    /* Section titles */
+    .section-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    
+    .section-subtitle {
+      color: var(--muted);
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 3rem;
+    }
+    
+    /* Background effects */
+    .bg-gradient {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 255, 213, 0.08), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(255, 184, 0, 0.05), transparent),
+        var(--bg);
+      z-index: 0;
+    }
+    
+    /* Loading */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s, visibility 0.5s;
+    }
+    
+    #loader.hidden { opacity: 0; visibility: hidden; }
+    
+    .loader-ring {
+      width: 60px;
+      height: 60px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    
+    /* Mobile */
+    @media (max-width: 768px) {
+      section { padding: 60px 16px; }
+      .portfolio-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .stat-num { font-size: 2.5rem; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🏋️‍♂️ LandingPagesFast</h1>
-        <p class="tagline">Simple, mobile-first landing pages for local businesses</p>
-        <div class="pricing">
-            💰 <strong>₹2,000 - ₹4,000</strong> one-time | More WhatsApp calls guaranteed
-        </div>
-        
-        <div class="grid">
-            <div class="card">
-                <h3>💪 Fitness Gym Demo</h3>
-                <p>Clean gym landing page with class schedules, pricing, and WhatsApp booking.</p>
-                <a href="https://landingpagesfast.github.io/fitness-gym-demo/" class="demo-btn" target="_blank">View Gym Demo</a>
-            </div>
-            
-            <div class="card">
-                <h3>🧘 Zen Yoga Demo</h3>
-                <p>Elegant yoga studio page with class times, teacher bios, and instant booking.</p>
-                <a href="https://landingpagesfast.github.io/zen-yoga-demo/" class="demo-btn" target="_blank">View Yoga Demo</a>
-            </div>
-            
-            <div class="card">
-                <h3>📚 Tutor Demo</h3>
-                <p>Results-driven tutor page with subject pricing, testimonials, and trial booking.</p>
-                <a href="https://landingpagesfast.github.io/ace-tutor-demo/" class="demo-btn" target="_blank">View Tutor Demo</a>
-            </div>
-            
-            <div class="card">
-                <h3>💅 Beauty Salon Demo</h3>
-                <p>Luxury salon page with service pricing, gallery, and appointment booking.</p>
-                <a href="https://landingpagesfast.github.io/glow-salon-demo/" class="demo-btn" target="_blank">View Salon Demo</a>
-            </div>
-            
-            <div class="card">
-                <h3>🎮 3D Gym Demo</h3>
-                <p>Interactive 3D gym experience with rotating equipment and smooth animations.</p>
-                <a href="https://landingpagesfast.github.io/powerfit-3d-gym/" class="demo-btn" target="_blank">View 3D Gym</a>
-            </div>
-            
-            <div class="card">
-                <h3>🌸 3D Yoga Demo</h3>
-                <p>Zen 3D lotus animation with serene yoga studio design and booking flow.</p>
-                <a href="https://landingpagesfast.github.io/lotus-3d-yoga/" class="demo-btn" target="_blank">View 3D Yoga</a>
-            </div>
-        </div>
-        
-        <div class="whatsapp-cta">
-            <p><strong>Ready for your custom landing page?</strong></p>
-            <a href="https://wa.me/91YOURNUMBER" class="whatsapp-btn">📱 WhatsApp Now - ₹2,500</a>
-            <p style="margin-top: 20px; color: rgba(255,255,255,0.8);">Gyms • Yoga • Tutors • Salons • 1-Day Delivery</p>
-        </div>
+  <!-- Loader -->
+  <div id="loader"><div class="loader-ring"></div></div>
+  
+  <!-- Background -->
+  <div class="bg-gradient"></div>
+  
+  <!-- 3D Canvas -->
+  <canvas id="webgl" class="canvas-layer canvas-interactive"></canvas>
+  
+  <!-- Hero Section -->
+  <section id="hero">
+    <div class="hero-content">
+      <h1 class="hero-title font-display">LandingPagesFast</h1>
+      <p class="hero-sub">Premium 3D landing pages that convert visitors into customers</p>
+      <div class="hero-price">
+        <span>Custom builds from</span>
+        <strong>$100-$500</strong>
+        <span>one-time</span>
+      </div>
+      <br>
+      <a href="https://wa.me/919599234747" target="_blank" class="cta-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        Get Instant Quote
+      </a>
     </div>
+    <div class="scroll-indicator">
+      <span>Explore Demos</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 5v14M19 12l-7 7-7-7"/>
+      </svg>
+    </div>
+  </section>
+  
+  <!-- Portfolio Section -->
+  <section id="portfolio">
+    <div class="w-full max-w-7xl">
+      <h2 class="section-title font-display">7 Live Premium Demos</h2>
+      <p class="section-subtitle">Click any demo to explore the live 3D experience</p>
+      
+      <div class="portfolio-grid">
+        <a href="https://landingpagesfast.github.io/zen-yoga-demo/" target="_blank" class="demo-card">
+          <div class="demo-thumb" style="background: linear-gradient(135deg, #2d5a4a, #1a3a2e);">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#00ffd5" stroke-width="1.5">
+              <circle cx="12" cy="6" r="3"/>
+              <path d="M12 9v6m-4 6c0-3 4-3 4-6m4 6c0-3-4-3-4-6"/>
+            </svg>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">
+              Zen Yoga Demo
+              <span class="demo-price">$150</span>
+            </div>
+            <p class="demo-desc">Serene zen yoga landing with breathing animations, floating poses. Mobile-first tranquility.</p>
+          </div>
+        </a>
+        
+        <a href="https://landingpagesfast.github.io/ace-tutor-demo/" target="_blank" class="demo-card">
+          <div class="demo-thumb" style="background: linear-gradient(135deg, #1e3a5f, #0d1f33);">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#00ffd5" stroke-width="1.5">
+              <path d="M12 3L2 12h3v9h14v-9h3L12 3z"/>
+              <path d="M9 21v-6h6v6"/>
+            </svg>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">
+              Ace Tutor Demo
+              <span class="demo-price">$200</span>
+            </div>
+            <p class="demo-desc">Premium tutoring page: Interactive courses, student stats, booking carousel.</p>
+          </div>
+        </a>
+        
+        <a href="https://landingpagesfast.github.io/glow-salon-demo/" target="_blank" class="demo-card">
+          <div class="demo-thumb" style="background: linear-gradient(135deg, #5a2d5a, #2e1a2e);">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#ffb800" stroke-width="1.5">
+              <circle cx="12" cy="8" r="5"/>
+              <path d="M4 20c0-5 3.5-8 8-8s8 3 8 8"/>
+              <circle cx="12" cy="8" r="2"/>
+            </svg>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">
+              Glow Salon Demo
+              <span class="demo-price">$250</span>
+            </div>
+            <p class="demo-desc">Beauty salon stunner: Glowing services, appointment orbs, WhatsApp booker.</p>
+          </div>
+        </a>
+        
+        <a href="https://landingpagesfast.github.io/powerfit-3d-gym/" target="_blank" class="demo-card">
+          <div class="demo-thumb" style="background: linear-gradient(135deg, #8b2a2a, #3d1515);">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#ff4444" stroke-width="1.5">
+              <rect x="2" y="10" width="20" height="4" rx="1"/>
+              <rect x="4" y="8" width="4" height="8" rx="1"/>
+              <rect x="16" y="8" width="4" height="8" rx="1"/>
+            </svg>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">
+              Powerfit 3D Gym
+              <span class="demo-price">$400</span>
+            </div>
+            <p class="demo-desc">Power-packed 3D gym: Rotating weights, service flips, stats counters.</p>
+          </div>
+        </a>
+        
+        <a href="https://landingpagesfast.github.io/lotus-3d-yoga/" target="_blank" class="demo-card">
+          <div class="demo-thumb" style="background: linear-gradient(135deg, #4a3d6b, #1f1a2e);">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#c4a0ff" stroke-width="1.5">
+              <path d="M12 3c-2 4-6 6-6 10a6 6 0 1012 0c0-4-4-6-6-10z"/>
+              <path d="M12 8c-1 2-3 3-3 5a3 3 0 106 0c0-2-2-3-3-5z"/>
+            </svg>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">
+              Lotus 3D Yoga
+              <span class="demo-price">$400</span>
+            </div>
+            <p class="demo-desc">Lotus-blooming yoga masterpiece: Interactive mats, zen particles, class calendar.</p>
+          </div>
+        </a>
+        
+        <a href="https://landingpagesfast.github.io/elite-3d-gym/" target="_blank" class="demo-card">
+          <div class="demo-thumb" style="background: linear-gradient(135deg, #2a4a2a, #153015);">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M12 7v5l3 3"/>
+            </svg>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">
+              Elite 3D Gym
+              <span class="demo-price">$400</span>
+            </div>
+            <p class="demo-desc">Elite gym interactive: Equipment rotation, testimonials float, membership CTA.</p>
+          </div>
+        </a>
+        
+        <a href="https://landingpagesfast.github.io/fitness-gym-demo/" target="_blank" class="demo-card">
+          <div class="demo-thumb" style="background: linear-gradient(135deg, #3d3d3d, #1a1a1a);">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.5">
+              <rect x="3" y="11" width="18" height="2" rx="1"/>
+              <circle cx="5" cy="12" r="3"/>
+              <circle cx="19" cy="12" r="3"/>
+            </svg>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">
+              Fitness Gym Demo
+              <span class="demo-price">$150</span>
+            </div>
+            <p class="demo-desc">Classic fitness gym: Hero carousel, trainer cards, conversion-focused design.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Pricing Section -->
+  <section id="pricing">
+    <div class="w-full max-w-6xl">
+      <h2 class="section-title font-display">Transparent Pricing</h2>
+      <p class="section-subtitle">One-time payment. No subscriptions. No hidden fees.</p>
+      
+      <div class="pricing-grid">
+        <div class="price-card">
+          <div class="price-tier">Starter</div>
+          <div class="price-amount">100</div>
+          <p class="price-desc">Simple landing page</p>
+          <ul class="price-features">
+            <li>Single page design</li>
+            <li>Mobile responsive</li>
+            <li>Basic animations</li>
+            <li>Contact form</li>
+            <li>2-day delivery</li>
+          </ul>
+          <a href="https://wa.me/919599234747?text=Hi! I'm interested in the $100 Starter package" target="_blank" class="cta-btn" style="width:100%;justify-content:center;">Get Started</a>
+        </div>
+        
+        <div class="price-card">
+          <div class="price-tier">Pro</div>
+          <div class="price-amount">200</div>
+          <p class="price-desc">Enhanced features</p>
+          <ul class="price-features">
+            <li>Multi-section page</li>
+            <li>Advanced animations</li>
+            <li>WhatsApp integration</li>
+            <li>SEO optimized</li>
+            <li>3-day delivery</li>
+          </ul>
+          <a href="https://wa.me/919599234747?text=Hi! I'm interested in the $200 Pro package" target="_blank" class="cta-btn" style="width:100%;justify-content:center;">Get Started</a>
+        </div>
+        
+        <div class="price-card featured">
+          <div class="price-badge">POPULAR</div>
+          <div class="price-tier">3D Premium</div>
+          <div class="price-amount">400</div>
+          <p class="price-desc">Full 3D experience</p>
+          <ul class="price-features">
+            <li>Full 3D interactive</li>
+            <li>Custom animations</li>
+            <li>Particle effects</li>
+            <li>Performance optimized</li>
+            <li>5-day delivery</li>
+          </ul>
+          <a href="https://wa.me/919599234747?text=Hi! I'm interested in the $400 3D Premium package" target="_blank" class="cta-btn" style="width:100%;justify-content:center;">Get Started</a>
+        </div>
+        
+        <div class="price-card">
+          <div class="price-tier">Enterprise</div>
+          <div class="price-amount">500</div>
+          <p class="price-desc">Custom masterpiece</p>
+          <ul class="price-features">
+            <li>Complete custom 3D</li>
+            <li>Multiple pages</li>
+            <li>GLTF model support</li>
+            <li>Priority support</li>
+            <li>7-day delivery</li>
+          </ul>
+          <a href="https://wa.me/919599234747?text=Hi! I'm interested in the $500 Enterprise package" target="_blank" class="cta-btn" style="width:100%;justify-content:center;">Get Started</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Features Section -->
+  <section id="features">
+    <div class="w-full max-w-6xl">
+      <h2 class="section-title font-display">Why Choose Us</h2>
+      <p class="section-subtitle">Built for performance, designed for conversion</p>
+      
+      <div class="features-list">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2"/>
+              <path d="M8 21h8M12 17v4"/>
+            </svg>
+          </div>
+          <div class="feature-title">60fps Mobile</div>
+          <p class="feature-desc">Optimized 3D that runs smooth on any device</p>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="#25d366">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+          </div>
+          <div class="feature-title">WhatsApp CTA</div>
+          <p class="feature-desc">Instant customer connection built-in</p>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2">
+              <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+              <path d="M12 22V12M3.27 6.96L12 12l8.73-5.04"/>
+            </svg>
+          </div>
+          <div class="feature-title">Custom GLTF</div>
+          <p class="feature-desc">Custom 3D models for your brand</p>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+          </div>
+          <div class="feature-title">24h Delivery</div>
+          <p class="feature-desc">Quick turnaround for simple projects</p>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <div class="feature-title">GitHub Ready</div>
+          <p class="feature-desc">Free hosting on GitHub Pages</p>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="feature-title">Secure Code</div>
+          <p class="feature-desc">Clean, secure, maintainable code</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Stats Section -->
+  <section id="stats">
+    <div class="w-full max-w-5xl">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-num" data-count="7">0</div>
+          <div class="stat-label">Live Demos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num" data-count="98" data-suffix="%">0%</div>
+          <div class="stat-label">Client Satisfaction</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num" data-count="24" data-suffix="h">0h</div>
+          <div class="stat-label">Fastest Delivery</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">$100-500</div>
+          <div class="stat-label">Pricing Range</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Testimonials -->
+  <section id="testimonials">
+    <div class="w-full max-w-6xl">
+      <h2 class="section-title font-display">Client Love</h2>
+      <p class="section-subtitle">Real feedback from real clients</p>
+      
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <p class="testimonial-text">"Absolutely stunning 3D effects! My gym landing page converts 3x better than the old one. Worth every penny."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">RK</div>
+            <div>
+              <div class="testimonial-name">Rahul Kumar</div>
+              <div class="testimonial-role">Gym Owner</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="testimonial-card">
+          <p class="testimonial-text">"The WhatsApp integration was genius. Leads come directly to my phone now. Super smooth mobile experience!"</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">PS</div>
+            <div>
+              <div class="testimonial-name">Priya Sharma</div>
+              <div class="testimonial-role">Yoga Instructor</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="testimonial-card">
+          <p class="testimonial-text">"Professional work, fast delivery, and the 3D animations make my salon look premium. Highly recommended!"</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">AM</div>
+            <div>
+              <div class="testimonial-name">Anjali Mehta</div>
+              <div class="testimonial-role">Salon Owner</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Mega CTA -->
+  <section id="cta">
+    <div class="mega-cta">
+      <h2 class="font-display">Ready to Stand Out?</h2>
+      <p class="section-subtitle">Get a custom 3D landing page that makes your competition invisible</p>
+      <a href="https://wa.me/919599234747" target="_blank" class="cta-btn" style="font-size:1.25rem;padding:20px 40px;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        WhatsApp Now: +91 9599234747
+      </a>
+      <p style="margin-top:20px;color:var(--muted);">Response within 2 hours</p>
+    </div>
+  </section>
+  
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    
+    // Initialize after DOM ready
+    const canvas = document.getElementById('webgl');
+    const loader = document.getElementById('loader');
+    
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 0, 50);
+    
+    const renderer = new THREE.WebGLRenderer({ 
+      canvas, 
+      alpha: true, 
+      antialias: true,
+      powerPreference: 'high-performance'
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    
+    // Controls
+    const controls = new OrbitControls(camera, canvas);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.enableZoom = false;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.3;
+    
+    // Demo data for planets
+    const demos = [
+      { name: 'Zen Yoga', color: '#2d5a4a', price: 150 },
+      { name: 'Ace Tutor', color: '#1e3a5f', price: 200 },
+      { name: 'Glow Salon', color: '#5a2d5a', price: 250 },
+      { name: 'Powerfit Gym', color: '#8b2a2a', price: 400 },
+      { name: 'Lotus Yoga', color: '#4a3d6b', price: 400 },
+      { name: 'Elite Gym', color: '#2a4a2a', price: 400 },
+      { name: 'Fitness Demo', color: '#3d3d3d', price: 150 }
+    ];
+    
+    // Create solar system
+    const solarGroup = new THREE.Group();
+    scene.add(solarGroup);
+    
+    // Central orb
+    const coreGeometry = new THREE.IcosahedronGeometry(5, 2);
+    const coreMaterial = new THREE.MeshBasicMaterial({
+      color: 0x00ffd5,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.6
+    });
+    const core = new THREE.Mesh(coreGeometry, coreMaterial);
+    solarGroup.add(core);
+    
+    // Inner glow
+    const glowGeometry = new THREE.SphereGeometry(6, 32, 32);
+    const glowMaterial = new THREE.MeshBasicMaterial({
+      color: 0x00ffd5,
+      transparent: true,
+      opacity: 0.15
+    });
+    const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+    solarGroup.add(glow);
+    
+    // Planet orbits and planets
+    const planets = [];
+    const orbits = [];
+    
+    demos.forEach((demo, i) => {
+      const angle = (i / demos.length) * Math.PI * 2;
+      const radius = 15 + (i % 2) * 5;
+      
+      // Orbit ring
+      const orbitGeometry = new THREE.RingGeometry(radius - 0.1, radius + 0.1, 64);
+      const orbitMaterial = new THREE.MeshBasicMaterial({
+        color: 0x00ffd5,
+        transparent: true,
+        opacity: 0.1,
+        side: THREE.DoubleSide
+      });
+      const orbit = new THREE.Mesh(orbitGeometry, orbitMaterial);
+      orbit.rotation.x = -Math.PI / 2;
+      solarGroup.add(orbit);
+      orbits.push(orbit);
+      
+      // Planet
+      const planetGeometry = new THREE.IcosahedronGeometry(2, 1);
+      const planetMaterial = new THREE.MeshBasicMaterial({
+        color: new THREE.Color(demo.color),
+        wireframe: true
+      });
+      const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+      
+      // Create group for orbit animation
+      const planetGroup = new THREE.Group();
+      planet.position.x = radius;
+      planetGroup.add(planet);
+      planetGroup.rotation.y = angle;
+      solarGroup.add(planetGroup);
+      
+      planets.push({ mesh: planet, group: planetGroup, demo, radius, baseAngle: angle });
+    });
+    
+    // Particle field
+    const particleCount = 500;
+    const particleGeometry = new THREE.BufferGeometry();
+    const particlePositions = new Float32Array(particleCount * 3);
+    const particleSizes = new Float32Array(particleCount);
+    
+    for (let i = 0; i < particleCount; i++) {
+      const i3 = i * 3;
+      particlePositions[i3] = (Math.random() - 0.5) * 200;
+      particlePositions[i3 + 1] = (Math.random() - 0.5) * 200;
+      particlePositions[i3 + 2] = (Math.random() - 0.5) * 200;
+      particleSizes[i] = Math.random() * 2 + 0.5;
+    }
+    
+    particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+    particleGeometry.setAttribute('aSize', new THREE.BufferAttribute(particleSizes, 1));
+    
+    const particleMaterial = new THREE.PointsMaterial({
+      color: 0x00ffd5,
+      size: 0.5,
+      transparent: true,
+      opacity: 0.6,
+      sizeAttenuation: true
+    });
+    
+    const particles = new THREE.Points(particleGeometry, particleMaterial);
+    scene.add(particles);
+    
+    // Floating orbs for pricing section
+    const orbGroup = new THREE.Group();
+    scene.add(orbGroup);
+    
+    const prices = [100, 200, 400, 500];
+    const priceOrbs = [];
+    
+    prices.forEach((price, i) => {
+      const orbGeometry = new THREE.SphereGeometry(3 + i * 0.5, 32, 32);
+      const orbMaterial = new THREE.MeshBasicMaterial({
+        color: i === 2 ? 0xffb800 : 0x00ffd5,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.5
+      });
+      const orb = new THREE.Mesh(orbGeometry, orbMaterial);
+      orb.position.set(-30 + i * 20, -80, 0);
+      orb.userData = { price, originalY: orb.position.y };
+      orbGroup.add(orb);
+      priceOrbs.push(orb);
+    });
+    
+    // Testimonial bubbles
+    const bubbleGroup = new THREE.Group();
+    scene.add(bubbleGroup);
+    
+    const bubbles = [];
+    for (let i = 0; i < 20; i++) {
+      const bubbleGeometry = new THREE.SphereGeometry(Math.random() * 2 + 1, 16, 16);
+      const bubbleMaterial = new THREE.MeshBasicMaterial({
+        color: Math.random() > 0.5 ? 0x00ffd5 : 0xffb800,
+        transparent: true,
+        opacity: 0.3
+      });
+      const bubble = new THREE.Mesh(bubbleGeometry, bubbleMaterial);
+      bubble.position.set(
+        (Math.random() - 0.5) * 100,
+        -150 + Math.random() * 50,
+        (Math.random() - 0.5) * 50
+      );
+      bubble.userData = { speed: Math.random() * 0.5 + 0.2, originalY: bubble.position.y };
+      bubbleGroup.add(bubble);
+      bubbles.push(bubble);
+    }
+    
+    // WhatsApp portal in CTA section
+    const portalGroup = new THREE.Group();
+    scene.add(portalGroup);
+    
+    const portalGeometry = new THREE.TorusGeometry(8, 1, 16, 100);
+    const portalMaterial = new THREE.MeshBasicMaterial({
+      color: 0x25d366,
+      transparent: true,
+      opacity: 0.7
+    });
+    const portal = new THREE.Mesh(portalGeometry, portalMaterial);
+    portal.position.y = -250;
+    portalGroup.add(portal);
+    
+    // Portal inner glow
+    const portalInnerGeometry = new THREE.CircleGeometry(7, 32);
+    const portalInnerMaterial = new THREE.MeshBasicMaterial({
+      color: 0x25d366,
+      transparent: true,
+      opacity: 0.2
+    });
+    const portalInner = new THREE.Mesh(portalInnerGeometry, portalInnerMaterial);
+    portalInner.position.y = -250;
+    portalGroup.add(portalInner);
+    
+    // Mouse interaction
+    let mouseX = 0;
+    let mouseY = 0;
+    let targetX = 0;
+    let targetY = 0;
+    
+    document.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+    });
+    
+    // Touch support
+    document.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 0) {
+        mouseX = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
+        mouseY = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
+      }
+    });
+    
+    // Scroll handling
+    let scrollY = 0;
+    window.addEventListener('scroll', () => {
+      scrollY = window.scrollY;
+    });
+    
+    // Animation
+    const clock = new THREE.Clock();
+    
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      const elapsed = clock.getElapsedTime();
+      
+      // Smooth mouse follow
+      targetX += (mouseX - targetX) * 0.05;
+      targetY += (mouseY - targetY) * 0.05;
+      
+      // Rotate solar system based on scroll
+      const scrollProgress = scrollY / (document.body.scrollHeight - window.innerHeight);
+      solarGroup.position.y = Math.max(0, 20 - scrollY * 0.02);
+      solarGroup.scale.setScalar(Math.max(0.5, 1 - scrollProgress * 0.5));
+      
+      // Core animation
+      core.rotation.x = elapsed * 0.3;
+      core.rotation.y = elapsed * 0.2;
+      glow.scale.setScalar(1 + Math.sin(elapsed * 2) * 0.1);
+      
+      // Planet orbits
+      planets.forEach((planet, i) => {
+        planet.group.rotation.y = planet.baseAngle + elapsed * (0.2 + i * 0.05);
+        planet.mesh.rotation.x = elapsed * 0.5;
+        planet.mesh.rotation.y = elapsed * 0.3;
+      });
+      
+      // Particle rotation
+      particles.rotation.y = elapsed * 0.02;
+      particles.rotation.x = targetY * 0.1;
+      
+      // Price orbs float
+      priceOrbs.forEach((orb, i) => {
+        orb.position.y = orb.userData.originalY + Math.sin(elapsed + i) * 5;
+        orb.rotation.x = elapsed * 0.3;
+        orb.rotation.y = elapsed * 0.2;
+      });
+      
+      // Bubbles rise
+      bubbles.forEach((bubble) => {
+        bubble.position.y += bubble.userData.speed * 0.1;
+        if (bubble.position.y > 100) {
+          bubble.position.y = bubble.userData.originalY;
+        }
+      });
+      
+      // Portal rotation
+      portal.rotation.z = elapsed;
+      portalInner.material.opacity = 0.2 + Math.sin(elapsed * 3) * 0.1;
+      
+      // Camera position based on scroll
+      camera.position.z = 50 + scrollProgress * 20;
+      camera.position.x = targetX * 10;
+      camera.position.y = -scrollProgress * 100 + targetY * 5;
+      
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    
+    // Resize handler
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+    
+    // Start animation
+    animate();
+    
+    // Hide loader
+    setTimeout(() => {
+      loader.classList.add('hidden');
+    }, 500);
+    
+    // Stats counter animation
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const statNums = entry.target.querySelectorAll('.stat-num[data-count]');
+          statNums.forEach(num => {
+            const target = parseInt(num.dataset.count);
+            const suffix = num.dataset.suffix || '';
+            let current = 0;
+            const increment = target / 50;
+            const timer = setInterval(() => {
+              current += increment;
+              if (current >= target) {
+                current = target;
+                clearInterval(timer);
+              }
+              num.textContent = Math.floor(current) + suffix;
+            }, 30);
+          });
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    
+    const statsSection = document.getElementById('stats');
+    if (statsSection) observer.observe(statsSection);
+    
+    // Card hover effects
+    document.querySelectorAll('.demo-card').forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-10px) scale(1.02)';
+      });
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = '';
+      });
+    });
+    
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
 </body>
 </html>
