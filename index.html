@@ -1,1311 +1,1262 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LandingPagesFast – Custom 3D Landing Pages $100-$500</title>
-  <meta name="description" content="Premium 3D landing pages for $100-$500. 7 live demos. WhatsApp instant quotes.">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Landing Pages Fast — AI-Powered Sites That Convert</title>
+  <meta name="description" content="Blazing-fast, AI-powered landing pages & chatbots that turn visitors into customers in seconds. Book now." />
+  <meta property="og:title" content="Landing Pages Fast — Convert More. Launch Faster." />
+  <meta property="og:description" content="AI-powered landing pages & chatbots built to convert. Starting at $200." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#0A0A0A" />
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cyber: { bg: '#0A0A0A', cyan: '#00F0FF', purple: '#C724FF', pink: '#FF00AA' },
+          },
+          fontFamily: {
+            orbitron: ['Orbitron', 'sans-serif'],
+            rajdhani: ['Rajdhani', 'sans-serif'],
+            inter: ['Inter', 'sans-serif'],
+          }
+        }
+      }
     }
-  }
   </script>
+
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
   <style>
     :root {
-      --bg: #06080c;
-      --bg-alt: #0c1018;
-      --fg: #f0f4f8;
-      --muted: #6b7a8f;
-      --accent: #00ffd5;
-      --accent-dim: #00c4a8;
-      --gold: #ffb800;
-      --card: rgba(12, 16, 24, 0.8);
-      --border: rgba(0, 255, 213, 0.15);
-      --glow: 0 0 40px rgba(0, 255, 213, 0.3);
+      --cyan: #00F0FF;
+      --purple: #C724FF;
+      --pink: #FF00AA;
+      --bg: #0A0A0A;
     }
-    
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+
     html { scroll-behavior: smooth; }
-    
+
     body {
-      font-family: 'Space Grotesk', sans-serif;
       background: var(--bg);
-      color: var(--fg);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
       overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CUSTOM CURSOR */
+    #cursor {
+      position: fixed; width: 12px; height: 12px;
+      background: var(--cyan); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
+      box-shadow: 0 0 15px var(--cyan);
+    }
+    #cursor-ring {
+      position: fixed; width: 36px; height: 36px;
+      border: 1.5px solid var(--cyan); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.18s ease, width 0.3s, height 0.3s, border-color 0.3s;
+      opacity: 0.6;
+    }
+    body:hover #cursor { opacity: 1; }
+
+    /* CANVAS */
+    #bg-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0; pointer-events: none;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(10,10,10,0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0,240,255,0.1);
+      transition: all 0.4s;
+    }
+    nav.scrolled { background: rgba(10,10,10,0.95); border-bottom-color: rgba(0,240,255,0.25); }
+
+    .nav-link {
+      position: relative; color: rgba(255,255,255,0.75);
+      text-decoration: none; font-family: 'Rajdhani', sans-serif;
+      font-weight: 600; font-size: 0.95rem; letter-spacing: 0.08em;
+      text-transform: uppercase; transition: color 0.3s;
+      padding: 4px 0;
+    }
+    .nav-link::after {
+      content: ''; position: absolute; bottom: -2px; left: 0;
+      width: 0; height: 1.5px;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      transition: width 0.3s;
+    }
+    .nav-link:hover { color: var(--cyan); }
+    .nav-link:hover::after { width: 100%; }
+
+    /* LOGO */
+    .logo-text {
+      font-family: 'Orbitron', sans-serif; font-weight: 900;
+      font-size: 1.1rem; letter-spacing: 0.05em;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 8px rgba(0,240,255,0.5));
+    }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh; position: relative; z-index: 1;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 120px 24px 80px;
+    }
+
+    .hero-title {
+      font-family: 'Orbitron', sans-serif; font-weight: 900;
+      font-size: clamp(2.4rem, 7vw, 6.5rem);
+      line-height: 1.05; letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff 0%, var(--cyan) 40%, var(--purple) 70%, var(--pink) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      filter: drop-shadow(0 0 40px rgba(0,240,255,0.3));
+      animation: titlePulse 4s ease-in-out infinite;
+    }
+    @keyframes titlePulse {
+      0%, 100% { filter: drop-shadow(0 0 30px rgba(0,240,255,0.25)); }
+      50% { filter: drop-shadow(0 0 60px rgba(199,36,255,0.35)); }
+    }
+
+    .hero-tagline {
+      font-family: 'Rajdhani', sans-serif; font-weight: 500;
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      color: rgba(255,255,255,0.75); letter-spacing: 0.03em;
+      max-width: 680px; margin: 0 auto;
       line-height: 1.6;
     }
-    
-    .font-display { font-family: 'Syne', sans-serif; }
-    
-    /* Canvas layers */
-    .canvas-layer {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 1;
+
+    /* GLOWING BUTTONS */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 32px; border-radius: 4px;
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      font-size: 1rem; letter-spacing: 0.12em; text-transform: uppercase;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: #0A0A0A; text-decoration: none;
+      box-shadow: 0 0 30px rgba(0,240,255,0.4), 0 0 60px rgba(0,240,255,0.15);
+      transition: all 0.3s; position: relative; overflow: hidden;
+      border: none; cursor: none;
     }
-    
-    .canvas-interactive { pointer-events: auto; }
-    
-    /* Sections */
-    section {
-      position: relative;
-      z-index: 10;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 80px 20px;
+    .btn-primary::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      opacity: 0; transition: opacity 0.3s;
     }
-    
-    /* Hero - FIXED */
-    #hero {
-      height: 100vh;
-      min-height: 100vh;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .btn-primary:hover { transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 0 50px rgba(0,240,255,0.6), 0 0 100px rgba(0,240,255,0.25); }
+    .btn-primary:hover::before { opacity: 1; }
+    .btn-primary span { position: relative; z-index: 1; }
+
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 32px; border-radius: 4px;
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      font-size: 1rem; letter-spacing: 0.12em; text-transform: uppercase;
+      background: transparent; color: var(--cyan); text-decoration: none;
+      border: 1.5px solid var(--cyan);
+      box-shadow: 0 0 20px rgba(0,240,255,0.2), inset 0 0 20px rgba(0,240,255,0.05);
+      transition: all 0.3s; cursor: none;
     }
-    
-    .hero-content {
-      position: relative;
-      z-index: 20;
-      text-align: center;
-      max-width: 95vw;
-      width: 100%;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+    .btn-outline:hover {
+      background: rgba(0,240,255,0.08);
+      box-shadow: 0 0 40px rgba(0,240,255,0.4), inset 0 0 30px rgba(0,240,255,0.1);
+      transform: translateY(-3px);
     }
-    
-    .hero-title {
-      font-size: clamp(1.8rem, 7vw, 4.5rem);
-      font-weight: 800;
-      line-height: 1.1;
-      margin-bottom: 1rem;
-      background: linear-gradient(135deg, var(--fg) 0%, var(--accent) 50%, var(--gold) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      word-break: keep-all;
-      white-space: nowrap;
+
+    /* SECTION TITLES */
+    .section-tag {
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      font-size: 0.8rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--cyan); margin-bottom: 12px;
     }
-    
-    /* Mobile title adjustment */
-    @media (max-width: 480px) {
-      .hero-title {
-        font-size: 1.8rem;
-        white-space: normal;
-        word-break: break-word;
-      }
+    .section-title {
+      font-family: 'Orbitron', sans-serif; font-weight: 700;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      background: linear-gradient(90deg, #fff, var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
-    
-    @media (min-width: 481px) and (max-width: 768px) {
-      .hero-title {
-        font-size: clamp(2rem, 6vw, 3rem);
-      }
+
+    /* 3D CARD BASE */
+    .card-3d {
+      transform-style: preserve-3d;
+      transition: transform 0.15s ease, box-shadow 0.3s;
+      will-change: transform;
     }
-    
-    .hero-sub {
-      font-size: clamp(0.95rem, 2.5vw, 1.4rem);
-      color: var(--muted);
-      margin-bottom: 1.5rem;
-      max-width: 600px;
+
+    /* SERVICE CARDS */
+    .service-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(0,240,255,0.15);
+      border-radius: 12px; padding: 32px;
+      position: relative; overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s;
     }
-    
-    .hero-price {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: center;
-      background: linear-gradient(135deg, rgba(0, 255, 213, 0.1), rgba(255, 184, 0, 0.1));
-      border: 1px solid var(--border);
-      padding: 12px 24px;
-      border-radius: 100px;
-      font-size: clamp(0.9rem, 2vw, 1.2rem);
-      font-weight: 600;
-      margin-bottom: 2rem;
+    .service-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(0,240,255,0.08) 0%, transparent 70%);
+      opacity: 0; transition: opacity 0.4s;
     }
-    
-    .hero-price span { color: var(--accent); }
-    .hero-price strong { color: var(--gold); }
-    
-    .cta-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: linear-gradient(135deg, #25d366, #128c7e);
-      color: white;
-      padding: 16px 32px;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: clamp(0.95rem, 2vw, 1.1rem);
-      text-decoration: none;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
-      border: none;
-      cursor: pointer;
+    .service-card:hover { border-color: rgba(0,240,255,0.5);
+      box-shadow: 0 0 40px rgba(0,240,255,0.15), inset 0 0 40px rgba(0,240,255,0.04); }
+    .service-card:hover::before { opacity: 1; }
+
+    .service-icon {
+      width: 52px; height: 52px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin-bottom: 20px;
     }
-    
-    .cta-btn:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 8px 30px rgba(37, 211, 102, 0.5);
+
+    /* DEMO GALLERY */
+    .demos-scroll {
+      display: flex; gap: 24px;
+      overflow-x: auto; padding: 24px 0 40px;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: thin; scrollbar-color: var(--cyan) transparent;
     }
-    
-    /* Portfolio Grid */
-    .portfolio-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 30px;
-      max-width: 1400px;
-      width: 100%;
-    }
-    
+    .demos-scroll::-webkit-scrollbar { height: 3px; }
+    .demos-scroll::-webkit-scrollbar-track { background: transparent; }
+    .demos-scroll::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 2px; }
+
     .demo-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      overflow: hidden;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      cursor: pointer;
-      position: relative;
-      text-decoration: none;
-      color: inherit;
+      min-width: 300px; height: 220px;
+      border-radius: 12px; position: relative;
+      overflow: hidden; cursor: none; flex-shrink: 0;
+      scroll-snap-align: start;
+      border: 1px solid rgba(0,240,255,0.2);
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+      background: rgba(255,255,255,0.03);
     }
-    
-    .demo-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(0, 255, 213, 0.05), transparent);
-      opacity: 0;
-      transition: opacity 0.3s;
-      z-index: 1;
-    }
-    
-    .demo-card:hover::before { opacity: 1; }
-    
     .demo-card:hover {
-      transform: translateY(-10px) scale(1.02);
-      border-color: var(--accent);
-      box-shadow: var(--glow);
+      border-color: var(--cyan); transform: scale(1.03);
+      box-shadow: 0 0 40px rgba(0,240,255,0.25);
     }
-    
-    .demo-thumb {
-      width: 100%;
-      height: 180px;
-      background: linear-gradient(135deg, var(--bg-alt), var(--bg));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
+    .demo-card-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(10,10,10,0.95) 0%, transparent 50%);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 20px;
     }
-    
-    .demo-thumb::after {
-      content: 'View Demo';
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 255, 213, 0.9);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--bg);
-      font-weight: 600;
-      font-size: 1.1rem;
-      opacity: 0;
-      transition: opacity 0.3s;
-      z-index: 2;
+    .demo-preview {
+      width: 100%; height: 100%; border: none;
+      transform: scale(0.6) translateY(-33%);
+      transform-origin: top center;
+      pointer-events: none;
     }
-    
-    .demo-card:hover .demo-thumb::after { opacity: 1; }
-    
-    .demo-info { padding: 24px; position: relative; z-index: 2; }
-    
-    .demo-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
+
+    /* PRICING */
+    .pricing-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px; padding: 36px 28px;
+      position: relative; overflow: hidden;
+      transition: all 0.4s;
     }
-    
-    .demo-price {
-      color: var(--gold);
-      font-size: 0.9rem;
-      background: rgba(255, 184, 0, 0.1);
-      padding: 4px 12px;
-      border-radius: 20px;
+    .pricing-card.popular {
+      border-color: rgba(0,240,255,0.5);
+      background: rgba(0,240,255,0.04);
+      transform: scale(1.04);
+      box-shadow: 0 0 60px rgba(0,240,255,0.2);
     }
-    
-    .demo-desc {
-      color: var(--muted);
-      font-size: 0.85rem;
+    .pricing-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 0 60px rgba(0,240,255,0.2);
+    }
+    .pricing-card.popular:hover { transform: translateY(-8px) scale(1.06); }
+    .pricing-price {
+      font-family: 'Orbitron', sans-serif; font-weight: 900;
+      font-size: 3rem; color: var(--cyan);
+      text-shadow: 0 0 30px rgba(0,240,255,0.5);
+    }
+    .pricing-feature {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 0.9rem; color: rgba(255,255,255,0.8);
       line-height: 1.5;
     }
-    
-    /* Pricing Section */
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 24px;
-      max-width: 1200px;
-      width: 100%;
+    .check { color: var(--cyan); font-size: 1rem; flex-shrink: 0; margin-top: 2px; }
+
+    /* REVIEWS */
+    .review-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 28px;
+      position: relative; overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s;
     }
-    
-    .price-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 35px 25px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.4s ease;
+    .review-card:hover {
+      border-color: rgba(199,36,255,0.4);
+      box-shadow: 0 0 30px rgba(199,36,255,0.1);
     }
-    
-    .price-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-5px);
+    .stars { color: #FFB800; font-size: 1rem; letter-spacing: 2px; }
+
+    /* MODAL */
+    #demo-modal {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(10px);
+      display: none; align-items: center; justify-content: center;
+      padding: 24px;
     }
-    
-    .price-card.featured {
-      border-color: var(--gold);
-      background: linear-gradient(180deg, rgba(255, 184, 0, 0.05), var(--card));
-    }
-    
-    .price-badge {
-      position: absolute;
-      top: 15px;
-      right: -30px;
-      background: var(--gold);
-      color: var(--bg);
-      padding: 5px 40px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      transform: rotate(45deg);
-    }
-    
-    .price-tier {
-      font-size: 0.85rem;
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 16px;
-    }
-    
-    .price-amount {
-      font-size: clamp(2.5rem, 5vw, 3.5rem);
-      font-weight: 800;
-      color: var(--fg);
-      margin-bottom: 8px;
-    }
-    
-    .price-amount::before { content: '$'; font-size: 1.5rem; vertical-align: top; }
-    
-    .price-desc {
-      color: var(--muted);
-      font-size: 0.85rem;
-      margin-bottom: 24px;
-    }
-    
-    .price-features {
-      list-style: none;
-      text-align: left;
-      margin-bottom: 24px;
-    }
-    
-    .price-features li {
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    .price-features li::before {
-      content: '✓';
-      color: var(--accent);
-      font-weight: bold;
-    }
-    
-    /* Features Ring */
-    .features-list {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      max-width: 1000px;
-    }
-    
-    .feature-item {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 25px;
-      text-align: center;
-      width: 180px;
-      transition: all 0.3s ease;
-    }
-    
-    .feature-item:hover {
-      border-color: var(--accent);
-      transform: translateY(-5px);
-    }
-    
-    .feature-icon {
-      width: 50px;
-      height: 50px;
-      margin: 0 auto 12px;
-      background: linear-gradient(135deg, rgba(0, 255, 213, 0.2), rgba(0, 255, 213, 0.05));
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .feature-title { font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
-    .feature-desc { color: var(--muted); font-size: 0.8rem; }
-    
-    /* Stats */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 30px;
-      max-width: 1000px;
-      width: 100%;
-      text-align: center;
-    }
-    
-    .stat-item { padding: 30px 20px; }
-    
-    .stat-num {
-      font-size: clamp(2.5rem, 6vw, 4rem);
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--accent), var(--gold));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    
-    .stat-label {
-      color: var(--muted);
-      font-size: 0.95rem;
-      margin-top: 8px;
-    }
-    
-    /* Testimonials */
-    .testimonials-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-      max-width: 1200px;
-      width: 100%;
-    }
-    
-    .testimonial-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 25px;
+    #demo-modal.active { display: flex; }
+    .modal-inner {
+      width: 100%; max-width: 1000px; max-height: 90vh;
+      border-radius: 16px; overflow: hidden;
+      border: 1px solid rgba(0,240,255,0.3);
+      box-shadow: 0 0 80px rgba(0,240,255,0.2);
       position: relative;
     }
-    
-    .testimonial-text {
-      font-size: 0.95rem;
-      line-height: 1.7;
-      margin-bottom: 20px;
-      font-style: italic;
-      color: var(--fg);
+    .modal-header {
+      background: rgba(10,10,10,0.95);
+      padding: 16px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(0,240,255,0.2);
     }
-    
-    .testimonial-author {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    #modal-iframe { width: 100%; height: 70vh; border: none; }
+
+    /* SECTION REVEAL */
+    .reveal {
+      opacity: 0; transform: translateY(40px) scale(0.97);
+      transition: opacity 0.7s ease, transform 0.7s ease;
     }
-    
-    .testimonial-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--gold));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: var(--bg);
-      font-size: 0.9rem;
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* PARTICLE TRAIL */
+    .particle {
+      position: fixed; pointer-events: none; z-index: 9990;
+      border-radius: 50%; animation: particleFade 0.8s forwards;
     }
-    
-    .testimonial-name { font-weight: 600; font-size: 0.95rem; }
-    .testimonial-role { color: var(--muted); font-size: 0.8rem; }
-    
-    /* Footer CTA */
-    .mega-cta {
-      text-align: center;
-      max-width: 800px;
-      padding: 0 20px;
+    @keyframes particleFade {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0); }
     }
-    
-    .mega-cta h2 {
-      font-size: clamp(1.8rem, 5vw, 3rem);
-      font-weight: 800;
-      margin-bottom: 1.5rem;
-    }
-    
-    /* Scroll indicator */
-    .scroll-indicator {
-      position: absolute;
-      bottom: 30px;
-      left: 50%;
+
+    /* SCROLL INDICATOR */
+    .scroll-line {
+      position: absolute; bottom: 40px; left: 50%;
       transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      color: var(--muted);
-      font-size: 0.75rem;
-      animation: bounce 2s infinite;
-      z-index: 20;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
     }
-    
-    @keyframes bounce {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50% { transform: translateX(-50%) translateY(10px); }
+    .scroll-line span {
+      font-family: 'Rajdhani', sans-serif; font-size: 0.75rem;
+      letter-spacing: 0.2em; color: rgba(255,255,255,0.4); text-transform: uppercase;
     }
-    
-    .scroll-indicator svg {
-      width: 24px;
-      height: 24px;
-      stroke: var(--accent);
+    .scroll-dot {
+      width: 1.5px; height: 60px;
+      background: linear-gradient(to bottom, var(--cyan), transparent);
+      animation: scrollAnim 2s ease-in-out infinite;
     }
-    
-    /* Section titles */
-    .section-title {
-      font-size: clamp(1.8rem, 5vw, 2.8rem);
-      font-weight: 800;
-      text-align: center;
-      margin-bottom: 1rem;
+    @keyframes scrollAnim {
+      0%, 100% { opacity: 0.3; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(1.1); }
     }
-    
-    .section-subtitle {
-      color: var(--muted);
-      text-align: center;
-      max-width: 600px;
-      margin: 0 auto 2.5rem;
-      font-size: clamp(0.9rem, 2vw, 1.1rem);
+
+    /* NEON HR */
+    .neon-divider {
+      height: 1px; border: none;
+      background: linear-gradient(90deg, transparent, var(--cyan), var(--purple), transparent);
+      opacity: 0.35; margin: 0;
     }
-    
-    /* Background effects */
-    .bg-gradient {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: 
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 255, 213, 0.08), transparent),
-        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(255, 184, 0, 0.05), transparent),
-        var(--bg);
-      z-index: 0;
+
+    /* COMING SOON CARD */
+    .coming-soon-card { opacity: 0.65; }
+    .coming-soon-badge {
+      display: inline-block;
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--purple);
+      border: 1px solid var(--purple);
+      padding: 3px 10px; border-radius: 3px;
+      box-shadow: 0 0 10px rgba(199,36,255,0.3);
     }
-    
-    /* Loading */
-    #loader {
-      position: fixed;
-      inset: 0;
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      transition: opacity 0.5s, visibility 0.5s;
+
+    /* WA button nav */
+    .btn-wa {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 18px; border-radius: 4px;
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase;
+      background: linear-gradient(135deg, var(--cyan), #00c4d4);
+      color: #0A0A0A; text-decoration: none;
+      transition: box-shadow 0.3s, transform 0.3s;
     }
-    
-    #loader.hidden { opacity: 0; visibility: hidden; }
-    
-    .loader-ring {
-      width: 60px;
-      height: 60px;
-      border: 3px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
+    .btn-wa:hover {
+      box-shadow: 0 0 25px rgba(0,240,255,0.5);
+      transform: translateY(-2px);
     }
-    
-    @keyframes spin { to { transform: rotate(360deg); } }
-    
-    /* Reduced motion */
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-      }
+
+    /* MOBILE NAV */
+    #mobile-menu {
+      display: none;
+      position: fixed; top: 70px; left: 0; right: 0;
+      background: rgba(10,10,10,0.98);
+      border-bottom: 1px solid rgba(0,240,255,0.15);
+      padding: 20px;
+      z-index: 99;
+      flex-direction: column; gap: 16px;
     }
-    
-    /* Mobile adjustments */
+    #mobile-menu.open { display: flex; }
+
     @media (max-width: 768px) {
-      section { padding: 60px 16px; min-height: auto; }
-      #portfolio, #pricing, #features, #stats, #testimonials, #cta { min-height: 100vh; }
-      .portfolio-grid { grid-template-columns: 1fr; }
-      .pricing-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
-      .price-card { padding: 25px 18px; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
-      .features-list { gap: 12px; }
-      .feature-item { width: 160px; padding: 20px; }
+      .desktop-nav { display: none; }
+      body { cursor: auto; }
+      #cursor, #cursor-ring { display: none; }
     }
-    
-    @media (max-width: 480px) {
-      .pricing-grid { grid-template-columns: 1fr; }
-      .feature-item { width: 100%; max-width: 200px; }
+
+    /* Footer */
+    footer a { color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.3s; font-size: 0.9rem; }
+    footer a:hover { color: var(--cyan); }
+
+    /* Glitch effect on logo */
+    @keyframes glitch {
+      0% { clip-path: inset(0 0 95% 0); transform: skew(0deg); }
+      5% { clip-path: inset(40% 0 50% 0); transform: skew(-1deg); }
+      10% { clip-path: inset(0 0 0 0); transform: skew(0deg); }
+      95% { clip-path: inset(0 0 0 0); transform: skew(0deg); }
+      100% { clip-path: inset(0 0 95% 0); transform: skew(0deg); }
+    }
+
+    section { position: relative; z-index: 1; }
+
+    /* Popular badge */
+    .popular-badge {
+      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      color: #0A0A0A; padding: 4px 18px; border-radius: 100px;
+      white-space: nowrap;
+    }
+
+    /* Neon pulse animation for popular card */
+    @keyframes neonPulse {
+      0%, 100% { box-shadow: 0 0 40px rgba(0,240,255,0.2), 0 0 80px rgba(0,240,255,0.1); }
+      50% { box-shadow: 0 0 60px rgba(0,240,255,0.4), 0 0 120px rgba(0,240,255,0.15); }
+    }
+    .pricing-card.popular { animation: neonPulse 3s ease-in-out infinite; }
+
+    .badge-enterprise {
+      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;
+      background: linear-gradient(90deg, var(--purple), var(--pink));
+      color: #fff; padding: 4px 18px; border-radius: 100px;
+      white-space: nowrap;
     }
   </style>
 </head>
 <body>
-  <!-- Loader -->
-  <div id="loader"><div class="loader-ring"></div></div>
-  
-  <!-- Background -->
-  <div class="bg-gradient"></div>
-  
-  <!-- 3D Canvas -->
-  <canvas id="webgl" class="canvas-layer canvas-interactive"></canvas>
-  
-  <!-- Hero Section -->
-  <section id="hero">
-    <div class="hero-content">
-      <h1 class="hero-title font-display">LandingPagesFast</h1>
-      <p class="hero-sub">Premium 3D landing pages that convert visitors into customers</p>
-      <div class="hero-price">
-        <span>Custom builds from</span>
-        <strong>$100-$500</strong>
-        <span>one-time</span>
+
+<!-- CUSTOM CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- THREE.JS CANVAS -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- DEMO MODAL -->
+<div id="demo-modal">
+  <div class="modal-inner">
+    <div class="modal-header">
+      <span id="modal-title" style="font-family:'Orbitron',sans-serif;font-size:0.9rem;color:var(--cyan);letter-spacing:0.1em;"></span>
+      <button onclick="closeModal()" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:1.5rem;cursor:pointer;line-height:1;transition:color 0.2s;" onmouseover="this.style.color='#00F0FF'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">&times;</button>
+    </div>
+    <iframe id="modal-iframe" src="" title="Demo Preview" allow="fullscreen"></iframe>
+  </div>
+</div>
+
+<!-- ═══════════════════ NAVBAR ═══════════════════ -->
+<nav id="navbar">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <!-- Logo -->
+    <a href="#hero" class="logo-text">Landing Pages Fast</a>
+
+    <!-- Desktop Links -->
+    <div class="desktop-nav hidden md:flex items-center gap-8">
+      <a href="#hero" class="nav-link">Home</a>
+      <a href="#services" class="nav-link">Services</a>
+      <a href="#demos" class="nav-link">Demos</a>
+      <a href="#pricing" class="nav-link">Pricing</a>
+      <a href="#contact" class="nav-link">Contact</a>
+    </div>
+
+    <!-- Nav CTA -->
+    <div class="hidden md:flex items-center gap-3">
+      <a href="https://wa.me/919873563158?text=Hi%2C%20I%20saw%20your%203D%20portfolio%20and%20want%20a%20landing%20page!" target="_blank" class="btn-wa">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </a>
+      <a href="mailto:official.celineastrra@gmail.com" class="btn-outline" style="padding:8px 18px;font-size:0.85rem;">Email</a>
+    </div>
+
+    <!-- Mobile Hamburger -->
+    <button id="hamburger" class="md:hidden flex flex-col gap-1.5 p-2" onclick="toggleMenu()" aria-label="Menu">
+      <span class="w-6 h-0.5 bg-white block transition-all"></span>
+      <span class="w-6 h-0.5 bg-white block transition-all"></span>
+      <span class="w-4 h-0.5 bg-white block transition-all self-end"></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div id="mobile-menu">
+  <a href="#hero" class="nav-link" onclick="toggleMenu()">Home</a>
+  <a href="#services" class="nav-link" onclick="toggleMenu()">Services</a>
+  <a href="#demos" class="nav-link" onclick="toggleMenu()">Demos</a>
+  <a href="#pricing" class="nav-link" onclick="toggleMenu()">Pricing</a>
+  <a href="#contact" class="nav-link" onclick="toggleMenu()">Contact</a>
+  <a href="https://wa.me/919873563158?text=Hi%2C%20I%20saw%20your%203D%20portfolio%20and%20want%20a%20landing%20page!" target="_blank" class="btn-wa" style="width:fit-content;">WhatsApp</a>
+</div>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<section id="hero">
+  <div class="hero-content" style="max-width:900px;margin:0 auto;padding:0 24px;">
+    <!-- Floating badge -->
+    <div style="display:inline-block;margin-bottom:28px;padding:6px 18px;border:1px solid rgba(0,240,255,0.4);border-radius:100px;background:rgba(0,240,255,0.05);backdrop-filter:blur(10px);">
+      <span style="font-family:'Rajdhani',sans-serif;font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--cyan);">
+        ◈ AI-Powered &nbsp;•&nbsp; Conversion-First &nbsp;•&nbsp; Launch-Ready
+      </span>
+    </div>
+
+    <h1 class="hero-title" style="margin-bottom:28px;">
+      Landing Pages<br/>Fast
+    </h1>
+
+    <p class="hero-tagline" style="margin-bottom:48px;">
+      Blazing-fast, AI-powered landing pages & chatbots that turn visitors into customers in seconds.
+    </p>
+
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <a href="#demos" class="btn-primary"><span>⚡ See Demos</span></a>
+      <a href="https://wa.me/919873563158?text=Hi%2C%20I%20saw%20your%203D%20portfolio%20and%20want%20a%20landing%20page!" target="_blank" class="btn-outline">Get Your Site Now →</a>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="scroll-line" style="margin-top:60px;">
+      <span>Scroll</span>
+      <div class="scroll-dot"></div>
+    </div>
+  </div>
+</section>
+
+<hr class="neon-divider" />
+
+<!-- ═══════════════════ SERVICES ═══════════════════ -->
+<section id="services" style="padding:100px 24px;">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center reveal" style="margin-bottom:64px;">
+      <p class="section-tag">What We Build</p>
+      <h2 class="section-title">Services That Convert</h2>
+      <p style="color:rgba(255,255,255,0.5);margin-top:16px;max-width:500px;margin-left:auto;margin-right:auto;font-size:0.95rem;line-height:1.7;">
+        Every service is engineered for one thing: turning clicks into customers.
+      </p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:24px;">
+      <!-- Card 1 -->
+      <div class="service-card card-3d reveal" data-tilt>
+        <div class="service-icon" style="background:linear-gradient(135deg,rgba(0,240,255,0.15),rgba(199,36,255,0.15));">🚀</div>
+        <h3 style="font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;margin-bottom:12px;color:#fff;letter-spacing:0.05em;">
+          Landing Page + Chatbot
+        </h3>
+        <p style="color:rgba(255,255,255,0.6);font-size:0.9rem;line-height:1.7;margin-bottom:20px;">
+          Complete conversion machine with a smart AI chatbot that qualifies leads 24/7 while you sleep.
+        </p>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:ping 1.5s ease-in-out infinite;"></span>
+          <span style="font-family:'Rajdhani',sans-serif;font-size:0.8rem;letter-spacing:0.12em;color:var(--cyan);text-transform:uppercase;">Live & Ready</span>
+        </div>
       </div>
-      <br>
-      <a href="https://wa.me/919599234747" target="_blank" rel="noopener" class="cta-btn">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-        </svg>
-        Get Instant Quote
+
+      <!-- Card 2 -->
+      <div class="service-card card-3d reveal" style="--delay:0.1s;border-color:rgba(199,36,255,0.15);" data-tilt>
+        <div class="service-icon" style="background:linear-gradient(135deg,rgba(199,36,255,0.15),rgba(255,0,170,0.15));">🤖</div>
+        <h3 style="font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;margin-bottom:12px;color:#fff;letter-spacing:0.05em;">
+          Chatbot Only
+        </h3>
+        <p style="color:rgba(255,255,255,0.6);font-size:0.9rem;line-height:1.7;margin-bottom:20px;">
+          Upgrade your existing site with an intelligent voice & text AI chatbot that handles leads automatically.
+        </p>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--purple);box-shadow:0 0 8px var(--purple);animation:ping 1.5s ease-in-out infinite 0.3s;"></span>
+          <span style="font-family:'Rajdhani',sans-serif;font-size:0.8rem;letter-spacing:0.12em;color:var(--purple);text-transform:uppercase;">Plug & Play</span>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="service-card card-3d reveal" style="--delay:0.2s;border-color:rgba(255,0,170,0.15);" data-tilt>
+        <div class="service-icon" style="background:linear-gradient(135deg,rgba(255,0,170,0.15),rgba(0,240,255,0.1));">🌐</div>
+        <h3 style="font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;margin-bottom:12px;color:#fff;letter-spacing:0.05em;">
+          Full Website
+        </h3>
+        <p style="color:rgba(255,255,255,0.6);font-size:0.9rem;line-height:1.7;margin-bottom:20px;">
+          Multi-page websites with seamless chatbot integration, SEO optimization, and full conversion architecture.
+        </p>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--pink);box-shadow:0 0 8px var(--pink);animation:ping 1.5s ease-in-out infinite 0.6s;"></span>
+          <span style="font-family:'Rajdhani',sans-serif;font-size:0.8rem;letter-spacing:0.12em;color:var(--pink);text-transform:uppercase;">Enterprise-Grade</span>
+        </div>
+      </div>
+
+      <!-- Card 4 — Coming Soon -->
+      <div class="service-card card-3d coming-soon-card reveal" style="--delay:0.3s;border-color:rgba(199,36,255,0.2);" data-tilt>
+        <div class="service-icon" style="background:linear-gradient(135deg,rgba(199,36,255,0.2),rgba(255,0,170,0.1));">🎙️</div>
+        <h3 style="font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;margin-bottom:8px;color:#fff;letter-spacing:0.05em;">
+          Voice Agent
+        </h3>
+        <span class="coming-soon-badge" style="margin-bottom:12px;display:inline-block;">Coming Soon</span>
+        <p style="color:rgba(255,255,255,0.5);font-size:0.9rem;line-height:1.7;margin-bottom:20px;">
+          A fully autonomous AI voice agent that calls leads, answers queries, and books appointments — entirely hands-free.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <p style="font-family:'Orbitron',sans-serif;font-size:0.7rem;color:var(--purple);letter-spacing:0.1em;">Launching Q2 2026</p>
+          <a href="https://wa.me/919873563158?text=Hi%2C%20I%20want%20early%20access%20to%20the%20Voice%20Agent!" target="_blank" class="btn-outline" style="padding:8px 18px;font-size:0.8rem;width:fit-content;">Get Early Access →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="neon-divider" />
+
+<!-- ═══════════════════ DEMOS ═══════════════════ -->
+<section id="demos" style="padding:100px 24px;">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center reveal" style="margin-bottom:48px;">
+      <p class="section-tag">Real Work, Real Results</p>
+      <h2 class="section-title">Live 3D Demos — Click to Experience</h2>
+      <p style="color:rgba(255,255,255,0.5);margin-top:16px;font-size:0.95rem;">
+        Every demo is live. Every one was built by us.
+      </p>
+    </div>
+
+    <div class="demos-scroll reveal" id="demo-scroll">
+      <!-- Demo cards injected by JS -->
+    </div>
+
+    <p style="text-align:center;color:rgba(255,255,255,0.3);font-size:0.8rem;font-family:'Rajdhani',sans-serif;letter-spacing:0.1em;text-transform:uppercase;margin-top:8px;">
+      ← Scroll to explore all demos →
+    </p>
+  </div>
+</section>
+
+<hr class="neon-divider" />
+
+<!-- ═══════════════════ PRICING ═══════════════════ -->
+<section id="pricing" style="padding:100px 24px;">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center reveal" style="margin-bottom:80px;">
+      <p class="section-tag">Transparent Pricing</p>
+      <h2 class="section-title">Invest Once. Convert Forever.</h2>
+      <p style="color:rgba(255,255,255,0.5);margin-top:16px;font-size:0.95rem;max-width:480px;margin-left:auto;margin-right:auto;">
+        No subscriptions. No surprise fees. Just results.
+      </p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px;align-items:center;">
+
+      <!-- Starter -->
+      <div class="pricing-card card-3d reveal">
+        <p style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:16px;">Starter</p>
+        <div class="pricing-price" style="color:rgba(255,255,255,0.85);text-shadow:none;margin-bottom:4px;">$200</div>
+        <p style="color:rgba(255,255,255,0.4);font-size:0.85rem;margin-bottom:28px;">One-time payment</p>
+        <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:32px;">
+          <div class="pricing-feature"><span class="check">✓</span>Single static landing page</div>
+          <div class="pricing-feature"><span class="check">✓</span>Minor copy & color changes included</div>
+          <div class="pricing-feature"><span class="check">✓</span>No chatbot</div>
+          <div class="pricing-feature"><span class="check">✓</span>Delivery in 2–3 days</div>
+          <div class="pricing-feature"><span class="check">✓</span>Basic email support</div>
+        </div>
+        <a href="https://wa.me/919873563158?text=Hi%2C%20I'm%20interested%20in%20the%20Starter%20plan%20-%20$200" target="_blank" class="btn-outline" style="width:100%;justify-content:center;">Get Started →</a>
+      </div>
+
+      <!-- Pro — Popular -->
+      <div class="pricing-card popular card-3d reveal" style="--delay:0.1s;position:relative;">
+        <div class="popular-badge">⚡ Most Popular</div>
+        <p style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--cyan);margin-bottom:16px;">Pro</p>
+        <div class="pricing-price" style="margin-bottom:4px;">$899</div>
+        <p style="color:rgba(255,255,255,0.4);font-size:0.85rem;margin-bottom:28px;">One-time payment</p>
+        <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:32px;">
+          <div class="pricing-feature"><span class="check">✓</span>Full custom website (all pages)</div>
+          <div class="pricing-feature"><span class="check">✓</span>Advanced AI chatbot included</div>
+          <div class="pricing-feature"><span class="check">✓</span>3 rounds of revisions</div>
+          <div class="pricing-feature"><span class="check">✓</span>3 months chatbot hosting</div>
+          <div class="pricing-feature"><span class="check">✓</span>Custom animations & effects</div>
+          <div class="pricing-feature"><span class="check">✓</span>Priority support</div>
+        </div>
+        <a href="https://wa.me/919873563158?text=Hi%2C%20I'm%20interested%20in%20the%20Pro%20plan%20-%20$899" target="_blank" class="btn-primary" style="width:100%;justify-content:center;"><span>Book Pro Plan →</span></a>
+      </div>
+
+      <!-- Enterprise -->
+      <div class="pricing-card card-3d reveal" style="--delay:0.2s;border-color:rgba(199,36,255,0.3);background:rgba(199,36,255,0.03);position:relative;">
+        <div class="badge-enterprise">👑 Full Power</div>
+        <p style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--purple);margin-bottom:16px;">Enterprise</p>
+        <div class="pricing-price" style="color:var(--purple);text-shadow:0 0 30px rgba(199,36,255,0.5);margin-bottom:4px;">$2100</div>
+        <p style="color:rgba(255,255,255,0.4);font-size:0.85rem;margin-bottom:28px;">One-time payment</p>
+        <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:32px;">
+          <div class="pricing-feature"><span class="check" style="color:var(--purple);">✓</span>Full custom website — every page</div>
+          <div class="pricing-feature"><span class="check" style="color:var(--purple);">✓</span>Full SEO optimization (on-page + technical)</div>
+          <div class="pricing-feature"><span class="check" style="color:var(--purple);">✓</span>Advanced AI chatbot included</div>
+          <div class="pricing-feature"><span class="check" style="color:var(--purple);">✓</span>Custom domain + hosting setup</div>
+          <div class="pricing-feature"><span class="check" style="color:var(--purple);">✓</span>12 months chatbot maintenance & updates</div>
+          <div class="pricing-feature"><span class="check" style="color:var(--purple);">✓</span>Unlimited revisions (first month)</div>
+          <div class="pricing-feature"><span class="check" style="color:var(--purple);">✓</span>Top-priority dedicated support</div>
+        </div>
+        <a href="https://wa.me/919873563158?text=Hi%2C%20I'm%20interested%20in%20the%20Enterprise%20plan%20-%20$2100" target="_blank" class="btn-outline" style="width:100%;justify-content:center;border-color:var(--purple);color:var(--purple);">Go Enterprise →</a>
+      </div>
+
+    </div>
+
+    <p style="text-align:center;margin-top:40px;color:rgba(255,255,255,0.3);font-size:0.85rem;">
+      Not sure which plan? <a href="https://wa.me/919873563158?text=Hi%2C%20I%20need%20help%20choosing%20a%20plan" target="_blank" style="color:var(--cyan);text-decoration:none;">Chat with us →</a>
+    </p>
+  </div>
+</section>
+
+<hr class="neon-divider" />
+
+<!-- ═══════════════════ REVIEWS ═══════════════════ -->
+<section id="reviews" style="padding:100px 24px;">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center reveal" style="margin-bottom:64px;">
+      <p class="section-tag">Client Love</p>
+      <h2 class="section-title">What Our Clients Say</h2>
+      <p style="color:rgba(255,255,255,0.5);margin-top:16px;font-size:0.95rem;">
+        Real businesses. Real results.
+      </p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;">
+
+      <div class="review-card card-3d reveal">
+        <div class="stars" style="margin-bottom:16px;">★★★★★</div>
+        <p style="color:rgba(255,255,255,0.75);font-size:0.95rem;line-height:1.75;margin-bottom:20px;font-style:italic;">
+          "The landing page went live in 2 days and our booking rate jumped within the first week. The chatbot handles everything — we barely touch enquiries anymore."
+        </p>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:700;color:#0A0A0A;font-size:1rem;">P</div>
+          <div>
+            <p style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;color:#fff;">Priya Sharma</p>
+            <p style="font-size:0.8rem;color:rgba(255,255,255,0.4);">Zen Yoga Studio, Delhi</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card card-3d reveal" style="--delay:0.1s;">
+        <div class="stars" style="margin-bottom:16px;">★★★★★</div>
+        <p style="color:rgba(255,255,255,0.75);font-size:0.95rem;line-height:1.75;margin-bottom:20px;font-style:italic;">
+          "I was skeptical at first, but the 3D demo blew my mind. My gym site looks better than any competitor in the city. Already seeing 3× more WhatsApp leads."
+        </p>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--pink));display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:1rem;">R</div>
+          <div>
+            <p style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;color:#fff;">Rahul Mehra</p>
+            <p style="font-size:0.8rem;color:rgba(255,255,255,0.4);">Elite Fitness Hub, Mumbai</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card card-3d reveal" style="--delay:0.2s;">
+        <div class="stars" style="margin-bottom:16px;">★★★★★</div>
+        <p style="color:rgba(255,255,255,0.75);font-size:0.95rem;line-height:1.75;margin-bottom:20px;font-style:italic;">
+          "Hired them for the Enterprise plan and it was worth every rupee. Full website, SEO done right, chatbot live. My salon bookings are fully automated now."
+        </p>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--cyan));display:flex;align-items:center;justify-content:center;font-weight:700;color:#0A0A0A;font-size:1rem;">A</div>
+          <div>
+            <p style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;color:#fff;">Aisha Khan</p>
+            <p style="font-size:0.8rem;color:rgba(255,255,255,0.4);">Glow Beauty Lounge, Bangalore</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card card-3d reveal" style="--delay:0.05s;">
+        <div class="stars" style="margin-bottom:16px;">★★★★★</div>
+        <p style="color:rgba(255,255,255,0.75);font-size:0.95rem;line-height:1.75;margin-bottom:20px;font-style:italic;">
+          "Super fast delivery and the animations are absolutely fire. Students love the design — enrolments went up noticeably after launch. Highly recommend."
+        </p>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#00c4d4,var(--purple));display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:1rem;">K</div>
+          <div>
+            <p style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;color:#fff;">Kavya Nair</p>
+            <p style="font-size:0.8rem;color:rgba(255,255,255,0.4);">Ace Tutors Academy, Pune</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card card-3d reveal" style="--delay:0.15s;">
+        <div class="stars" style="margin-bottom:16px;">★★★★★</div>
+        <p style="color:rgba(255,255,255,0.75);font-size:0.95rem;line-height:1.75;margin-bottom:20px;font-style:italic;">
+          "The chatbot alone is worth it. Handles FAQs, collects leads, sends them straight to my WhatsApp. I feel like I have a 24/7 assistant for free after the setup."
+        </p>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:1rem;">S</div>
+          <div>
+            <p style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;color:#fff;">Siddharth Joshi</p>
+            <p style="font-size:0.8rem;color:rgba(255,255,255,0.4);">PowerFit Gym, Hyderabad</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card card-3d reveal" style="--delay:0.25s;">
+        <div class="stars" style="margin-bottom:16px;">★★★★★</div>
+        <p style="color:rgba(255,255,255,0.75);font-size:0.95rem;line-height:1.75;margin-bottom:20px;font-style:italic;">
+          "I showed the site to a friend who's a designer and she asked who built it. When I said 'a small team,' she didn't believe me. That says everything."
+        </p>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#ffa200,var(--pink));display:flex;align-items:center;justify-content:center;font-weight:700;color:#0A0A0A;font-size:1rem;">N</div>
+          <div>
+            <p style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;color:#fff;">Neha Verma</p>
+            <p style="font-size:0.8rem;color:rgba(255,255,255,0.4);">Lotus Wellness, Jaipur</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<hr class="neon-divider" />
+
+<!-- ═══════════════════ CONTACT / CTA ═══════════════════ -->
+<section id="contact" style="padding:120px 24px;text-align:center;">
+  <div class="max-w-3xl mx-auto reveal">
+    <p class="section-tag" style="margin-bottom:16px;">Let's Build Together</p>
+    <h2 style="font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(1.8rem,4.5vw,3.2rem);line-height:1.15;margin-bottom:24px;background:linear-gradient(135deg,#fff,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+      Ready to launch your<br/>conversion machine?
+    </h2>
+    <p style="color:rgba(255,255,255,0.55);font-size:1rem;line-height:1.7;margin-bottom:48px;max-width:480px;margin-left:auto;margin-right:auto;">
+      Drop us a message and we'll have your site live faster than you think. No fluff. Just results.
+    </p>
+
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:40px;">
+      <a href="https://wa.me/919873563158?text=Hi%2C%20I%20saw%20your%203D%20portfolio%20and%20want%20a%20landing%20page!" target="_blank" class="btn-primary" style="font-size:1.05rem;padding:16px 36px;">
+        <span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:inline;vertical-align:-3px;margin-right:6px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Chat on WhatsApp
+        </span>
+      </a>
+      <a href="mailto:official.celineastrra@gmail.com" class="btn-outline" style="font-size:1.05rem;padding:16px 36px;">
+        ✉ Email Us
       </a>
     </div>
-    <div class="scroll-indicator">
-      <span>Explore Demos</span>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 5v14M19 12l-7 7-7-7"/>
-      </svg>
+
+    <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+      <p style="color:rgba(255,255,255,0.4);font-family:'Rajdhani',sans-serif;font-size:0.85rem;letter-spacing:0.08em;">
+        WhatsApp: <span style="color:var(--cyan);">+91 98735 63158</span>
+        &nbsp;|&nbsp;
+        Email: <span style="color:var(--cyan);">official.celineastrra@gmail.com</span>
+      </p>
     </div>
-  </section>
-  
-  <!-- Portfolio Section -->
-  <section id="portfolio">
-    <div class="w-full max-w-7xl">
-      <h2 class="section-title font-display">7 Live Premium Demos</h2>
-      <p class="section-subtitle">Click any demo to explore the live 3D experience</p>
-      
-      <div class="portfolio-grid">
-        <a href="https://landingpagesfast.github.io/zen-yoga-demo/" target="_blank" rel="noopener" class="demo-card">
-          <div class="demo-thumb" style="background: linear-gradient(135deg, #2d5a4a, #1a3a2e);">
-            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#00ffd5" stroke-width="1.5">
-              <circle cx="12" cy="6" r="3"/>
-              <path d="M12 9v6m-4 6c0-3 4-3 4-6m4 6c0-3-4-3-4-6"/>
-            </svg>
-          </div>
-          <div class="demo-info">
-            <div class="demo-title">
-              Zen Yoga Demo
-              <span class="demo-price">$150</span>
-            </div>
-            <p class="demo-desc">Serene zen yoga landing with breathing animations, floating poses. Mobile-first tranquility.</p>
-          </div>
-        </a>
-        
-        <a href="https://landingpagesfast.github.io/ace-tutor-demo/" target="_blank" rel="noopener" class="demo-card">
-          <div class="demo-thumb" style="background: linear-gradient(135deg, #1e3a5f, #0d1f33);">
-            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#00ffd5" stroke-width="1.5">
-              <path d="M12 3L2 12h3v9h14v-9h3L12 3z"/>
-              <path d="M9 21v-6h6v6"/>
-            </svg>
-          </div>
-          <div class="demo-info">
-            <div class="demo-title">
-              Ace Tutor Demo
-              <span class="demo-price">$200</span>
-            </div>
-            <p class="demo-desc">Premium tutoring page: Interactive courses, student stats, booking carousel.</p>
-          </div>
-        </a>
-        
-        <a href="https://landingpagesfast.github.io/glow-salon-demo/" target="_blank" rel="noopener" class="demo-card">
-          <div class="demo-thumb" style="background: linear-gradient(135deg, #5a2d5a, #2e1a2e);">
-            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ffb800" stroke-width="1.5">
-              <circle cx="12" cy="8" r="5"/>
-              <path d="M4 20c0-5 3.5-8 8-8s8 3 8 8"/>
-              <circle cx="12" cy="8" r="2"/>
-            </svg>
-          </div>
-          <div class="demo-info">
-            <div class="demo-title">
-              Glow Salon Demo
-              <span class="demo-price">$250</span>
-            </div>
-            <p class="demo-desc">Beauty salon stunner: Glowing services, appointment orbs, WhatsApp booker.</p>
-          </div>
-        </a>
-        
-        <a href="https://landingpagesfast.github.io/powerfit-3d-gym/" target="_blank" rel="noopener" class="demo-card">
-          <div class="demo-thumb" style="background: linear-gradient(135deg, #8b2a2a, #3d1515);">
-            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ff4444" stroke-width="1.5">
-              <rect x="2" y="10" width="20" height="4" rx="1"/>
-              <rect x="4" y="8" width="4" height="8" rx="1"/>
-              <rect x="16" y="8" width="4" height="8" rx="1"/>
-            </svg>
-          </div>
-          <div class="demo-info">
-            <div class="demo-title">
-              Powerfit 3D Gym
-              <span class="demo-price">$400</span>
-            </div>
-            <p class="demo-desc">Power-packed 3D gym: Rotating weights, service flips, stats counters.</p>
-          </div>
-        </a>
-        
-        <a href="https://landingpagesfast.github.io/lotus-3d-yoga/" target="_blank" rel="noopener" class="demo-card">
-          <div class="demo-thumb" style="background: linear-gradient(135deg, #4a3d6b, #1f1a2e);">
-            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#c4a0ff" stroke-width="1.5">
-              <path d="M12 3c-2 4-6 6-6 10a6 6 0 1012 0c0-4-4-6-6-10z"/>
-              <path d="M12 8c-1 2-3 3-3 5a3 3 0 106 0c0-2-2-3-3-5z"/>
-            </svg>
-          </div>
-          <div class="demo-info">
-            <div class="demo-title">
-              Lotus 3D Yoga
-              <span class="demo-price">$400</span>
-            </div>
-            <p class="demo-desc">Lotus-blooming yoga masterpiece: Interactive mats, zen particles, class calendar.</p>
-          </div>
-        </a>
-        
-        <a href="https://landingpagesfast.github.io/elite-3d-gym/" target="_blank" rel="noopener" class="demo-card">
-          <div class="demo-thumb" style="background: linear-gradient(135deg, #2a4a2a, #153015);">
-            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5">
-              <circle cx="12" cy="12" r="9"/>
-              <path d="M12 7v5l3 3"/>
-            </svg>
-          </div>
-          <div class="demo-info">
-            <div class="demo-title">
-              Elite 3D Gym
-              <span class="demo-price">$400</span>
-            </div>
-            <p class="demo-desc">Elite gym interactive: Equipment rotation, testimonials float, membership CTA.</p>
-          </div>
-        </a>
-        
-        <a href="https://landingpagesfast.github.io/fitness-gym-demo/" target="_blank" rel="noopener" class="demo-card">
-          <div class="demo-thumb" style="background: linear-gradient(135deg, #3d3d3d, #1a1a1a);">
-            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.5">
-              <rect x="3" y="11" width="18" height="2" rx="1"/>
-              <circle cx="5" cy="12" r="3"/>
-              <circle cx="19" cy="12" r="3"/>
-            </svg>
-          </div>
-          <div class="demo-info">
-            <div class="demo-title">
-              Fitness Gym Demo
-              <span class="demo-price">$150</span>
-            </div>
-            <p class="demo-desc">Classic fitness gym: Hero carousel, trainer cards, conversion-focused design.</p>
-          </div>
-        </a>
+  </div>
+</section>
+
+<hr class="neon-divider" />
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer style="padding:60px 24px 32px;background:rgba(0,0,0,0.5);">
+  <div class="max-w-7xl mx-auto">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:40px;margin-bottom:48px;">
+      <!-- Brand -->
+      <div>
+        <div class="logo-text" style="font-size:1rem;margin-bottom:16px;">Landing Pages Fast</div>
+        <p style="color:rgba(255,255,255,0.4);font-size:0.85rem;line-height:1.7;margin-bottom:20px;">
+          AI-powered sites built to convert.<br/>No fluff. Just results.
+        </p>
+        <div style="display:flex;gap:12px;">
+          <!-- Social icons placeholder -->
+          <a href="#" style="width:36px;height:36px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);text-decoration:none;font-size:0.9rem;transition:border-color 0.3s,color 0.3s;" onmouseover="this.style.borderColor='var(--cyan)';this.style.color='var(--cyan)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.5)'">in</a>
+          <a href="#" style="width:36px;height:36px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);text-decoration:none;font-size:0.9rem;transition:border-color 0.3s,color 0.3s;" onmouseover="this.style.borderColor='var(--cyan)';this.style.color='var(--cyan)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.5)'">𝕏</a>
+          <a href="#" style="width:36px;height:36px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);text-decoration:none;font-size:0.9rem;transition:border-color 0.3s,color 0.3s;" onmouseover="this.style.borderColor='var(--cyan)';this.style.color='var(--cyan)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.5)'">ig</a>
+        </div>
       </div>
-    </div>
-  </section>
-  
-  <!-- Pricing Section -->
-  <section id="pricing">
-    <div class="w-full max-w-6xl">
-      <h2 class="section-title font-display">Transparent Pricing</h2>
-      <p class="section-subtitle">One-time payment. No subscriptions. No hidden fees.</p>
-      
-      <div class="pricing-grid">
-        <div class="price-card">
-          <div class="price-tier">Starter</div>
-          <div class="price-amount">100</div>
-          <p class="price-desc">Simple landing page</p>
-          <ul class="price-features">
-            <li>Single page design</li>
-            <li>Mobile responsive</li>
-            <li>Basic animations</li>
-            <li>Contact form</li>
-            <li>2-day delivery</li>
-          </ul>
-          <a href="https://wa.me/919599234747?text=Hi! I'm interested in the $100 Starter package" target="_blank" rel="noopener" class="cta-btn" style="width:100%;justify-content:center;font-size:0.95rem;padding:14px 20px;">Get Started</a>
+
+      <!-- Quick Links -->
+      <div>
+        <p style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:16px;">Navigation</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <a href="#hero">Home</a>
+          <a href="#services">Services</a>
+          <a href="#demos">Demos</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#contact">Contact</a>
         </div>
-        
-        <div class="price-card">
-          <div class="price-tier">Pro</div>
-          <div class="price-amount">200</div>
-          <p class="price-desc">Enhanced features</p>
-          <ul class="price-features">
-            <li>Multi-section page</li>
-            <li>Advanced animations</li>
-            <li>WhatsApp integration</li>
-            <li>SEO optimized</li>
-            <li>3-day delivery</li>
-          </ul>
-          <a href="https://wa.me/919599234747?text=Hi! I'm interested in the $200 Pro package" target="_blank" rel="noopener" class="cta-btn" style="width:100%;justify-content:center;font-size:0.95rem;padding:14px 20px;">Get Started</a>
-        </div>
-        
-        <div class="price-card featured">
-          <div class="price-badge">POPULAR</div>
-          <div class="price-tier">3D Premium</div>
-          <div class="price-amount">400</div>
-          <p class="price-desc">Full 3D experience</p>
-          <ul class="price-features">
-            <li>Full 3D interactive</li>
-            <li>Custom animations</li>
-            <li>Particle effects</li>
-            <li>Performance optimized</li>
-            <li>5-day delivery</li>
-          </ul>
-          <a href="https://wa.me/919599234747?text=Hi! I'm interested in the $400 3D Premium package" target="_blank" rel="noopener" class="cta-btn" style="width:100%;justify-content:center;font-size:0.95rem;padding:14px 20px;">Get Started</a>
-        </div>
-        
-        <div class="price-card">
-          <div class="price-tier">Enterprise</div>
-          <div class="price-amount">500</div>
-          <p class="price-desc">Custom masterpiece</p>
-          <ul class="price-features">
-            <li>Complete custom 3D</li>
-            <li>Multiple pages</li>
-            <li>GLTF model support</li>
-            <li>Priority support</li>
-            <li>7-day delivery</li>
-          </ul>
-          <a href="https://wa.me/919599234747?text=Hi! I'm interested in the $500 Enterprise package" target="_blank" rel="noopener" class="cta-btn" style="width:100%;justify-content:center;font-size:0.95rem;padding:14px 20px;">Get Started</a>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <p style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:16px;">Contact</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <a href="https://wa.me/919873563158" target="_blank">+91 98735 63158</a>
+          <a href="mailto:official.celineastrra@gmail.com">official.celineastrra@gmail.com</a>
         </div>
       </div>
     </div>
-  </section>
-  
-  <!-- Features Section -->
-  <section id="features">
-    <div class="w-full max-w-6xl">
-      <h2 class="section-title font-display">Why Choose Us</h2>
-      <p class="section-subtitle">Built for performance, designed for conversion</p>
-      
-      <div class="features-list">
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2">
-              <rect x="2" y="3" width="20" height="14" rx="2"/>
-              <path d="M8 21h8M12 17v4"/>
-            </svg>
-          </div>
-          <div class="feature-title">60fps Mobile</div>
-          <p class="feature-desc">Optimized 3D that runs smooth on any device</p>
-        </div>
-        
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="#25d366">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-            </svg>
-          </div>
-          <div class="feature-title">WhatsApp CTA</div>
-          <p class="feature-desc">Instant customer connection built-in</p>
-        </div>
-        
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2">
-              <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
-              <path d="M12 22V12M3.27 6.96L12 12l8.73-5.04"/>
-            </svg>
-          </div>
-          <div class="feature-title">Custom GLTF</div>
-          <p class="feature-desc">Custom 3D models for your brand</p>
-        </div>
-        
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M12 6v6l4 2"/>
-            </svg>
-          </div>
-          <div class="feature-title">24h Delivery</div>
-          <p class="feature-desc">Quick turnaround for simple projects</p>
-        </div>
-        
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-            </svg>
-          </div>
-          <div class="feature-title">GitHub Ready</div>
-          <p class="feature-desc">Free hosting on GitHub Pages</p>
-        </div>
-        
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-          </div>
-          <div class="feature-title">Secure Code</div>
-          <p class="feature-desc">Clean, secure, maintainable code</p>
-        </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.06);">
+      <p style="color:rgba(255,255,255,0.25);font-size:0.85rem;">
+        © 2026 Landing Pages Fast — Built with cosmic energy ✦
+      </p>
+      <a href="#hero" style="color:rgba(255,255,255,0.3);font-size:0.85rem;text-decoration:none;font-family:'Rajdhani',sans-serif;letter-spacing:0.1em;text-transform:uppercase;transition:color 0.3s;" onmouseover="this.style.color='var(--cyan)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">↑ Back to Top</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════ SCRIPTS ═══════════════════ -->
+<script>
+// ═══ DEMO DATA ═══
+const DEMOS = [
+  { title: 'Zen Yoga', label: 'Yoga Studio', url: 'https://landingpagesfast.github.io/zen-yoga-demo/', color: '#00F0FF' },
+  { title: 'Ace Tutors', label: 'Education', url: 'https://landingpagesfast.github.io/ace-tutor-demo/', color: '#C724FF' },
+  { title: 'Glow Salon', label: 'Beauty & Wellness', url: 'https://landingpagesfast.github.io/glow-salon-demo/', color: '#FF00AA' },
+  { title: 'Elite 3D Gym', label: 'Fitness', url: 'https://landingpagesfast.github.io/elite-3d-gym/', color: '#00F0FF' },
+  { title: 'Lotus 3D Yoga', label: 'Yoga', url: 'https://landingpagesfast.github.io/lotus-3d-yoga/', color: '#C724FF' },
+  { title: 'PowerFit 3D', label: 'Gym & Fitness', url: 'https://landingpagesfast.github.io/powerfit-3d-gym/', color: '#FF00AA' },
+  { title: 'Fitness Gym', label: 'Gym Demo', url: 'https://landingpagesfast.github.io/fitness-gym-demo/', color: '#00F0FF' },
+];
+
+// ═══ BUILD DEMO CARDS ═══
+const demoScroll = document.getElementById('demo-scroll');
+DEMOS.forEach((demo, i) => {
+  const card = document.createElement('div');
+  card.className = 'demo-card card-3d';
+  card.style.setProperty('--demo-color', demo.color);
+  card.style.borderColor = demo.color + '40';
+  card.innerHTML = `
+    <iframe class="demo-preview" src="${demo.url}" title="${demo.title}" loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+    <div class="demo-card-overlay">
+      <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px;">
+        <span style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:${demo.color};opacity:0.8;">${demo.label}</span>
+        <span style="font-family:'Orbitron',sans-serif;font-size:0.9rem;font-weight:700;color:#fff;">${demo.title}</span>
       </div>
+      <button onclick="openModal('${demo.url}','${demo.title}')" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:4px;border:1px solid ${demo.color};background:rgba(10,10,10,0.8);color:${demo.color};font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.25s;" onmouseover="this.style.background='${demo.color}20'" onmouseout="this.style.background='rgba(10,10,10,0.8)'">
+        ⊕ View Live
+      </button>
     </div>
-  </section>
-  
-  <!-- Stats Section -->
-  <section id="stats">
-    <div class="w-full max-w-5xl">
-      <div class="stats-grid">
-        <div class="stat-item">
-          <div class="stat-num" data-count="7">0</div>
-          <div class="stat-label">Live Demos</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num" data-count="98" data-suffix="%">0%</div>
-          <div class="stat-label">Client Satisfaction</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num" data-count="24" data-suffix="h">0h</div>
-          <div class="stat-label">Fastest Delivery</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num">$100-500</div>
-          <div class="stat-label">Pricing Range</div>
-        </div>
-      </div>
-    </div>
-  </section>
-  
-  <!-- Testimonials -->
-  <section id="testimonials">
-    <div class="w-full max-w-6xl">
-      <h2 class="section-title font-display">Client Love</h2>
-      <p class="section-subtitle">Real feedback from real clients</p>
-      
-      <div class="testimonials-grid">
-        <div class="testimonial-card">
-          <p class="testimonial-text">"Absolutely stunning 3D effects! My gym landing page converts 3x better than the old one. Worth every penny."</p>
-          <div class="testimonial-author">
-            <div class="testimonial-avatar">RK</div>
-            <div>
-              <div class="testimonial-name">Rahul Kumar</div>
-              <div class="testimonial-role">Gym Owner</div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="testimonial-card">
-          <p class="testimonial-text">"The WhatsApp integration was genius. Leads come directly to my phone now. Super smooth mobile experience!"</p>
-          <div class="testimonial-author">
-            <div class="testimonial-avatar">PS</div>
-            <div>
-              <div class="testimonial-name">Priya Sharma</div>
-              <div class="testimonial-role">Yoga Instructor</div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="testimonial-card">
-          <p class="testimonial-text">"Professional work, fast delivery, and the 3D animations make my salon look premium. Highly recommended!"</p>
-          <div class="testimonial-author">
-            <div class="testimonial-avatar">AM</div>
-            <div>
-              <div class="testimonial-name">Anjali Mehta</div>
-              <div class="testimonial-role">Salon Owner</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  
-  <!-- Mega CTA -->
-  <section id="cta">
-    <div class="mega-cta">
-      <h2 class="font-display">Ready to Stand Out?</h2>
-      <p class="section-subtitle">Get a custom 3D landing page that makes your competition invisible</p>
-      <a href="https://wa.me/919599234747" target="_blank" rel="noopener" class="cta-btn" style="font-size:clamp(1rem,2.5vw,1.25rem);padding:20px 40px;">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-        </svg>
-        WhatsApp: +91 9599234747
-      </a>
-      <p style="margin-top:20px;color:var(--muted);">Response within 2 hours</p>
-    </div>
-  </section>
-  
-  <script type="module">
-    import * as THREE from 'three';
-    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-    
-    // Initialize after DOM ready
-    const canvas = document.getElementById('webgl');
-    const loader = document.getElementById('loader');
-    
-    // Scene setup
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 0, 50);
-    
-    const renderer = new THREE.WebGLRenderer({ 
-      canvas, 
-      alpha: true, 
-      antialias: true,
-      powerPreference: 'high-performance'
-    });
+  `;
+  card.addEventListener('mouseenter', () => {
+    card.style.boxShadow = `0 0 40px ${demo.color}40`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.boxShadow = '';
+  });
+  demoScroll.appendChild(card);
+});
+
+// ═══ MODAL ═══
+function openModal(url, title) {
+  document.getElementById('modal-iframe').src = url;
+  document.getElementById('modal-title').textContent = title.toUpperCase();
+  document.getElementById('demo-modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('demo-modal').classList.remove('active');
+  document.getElementById('modal-iframe').src = '';
+  document.body.style.overflow = '';
+}
+document.getElementById('demo-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ═══ CUSTOM CURSOR ═══
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+  spawnParticle(mx, my);
+});
+
+function animRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top = ry + 'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+
+document.querySelectorAll('a, button, [data-tilt]').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.width = '20px'; cursor.style.height = '20px';
+    cursor.style.background = 'var(--purple)';
+    ring.style.width = '52px'; ring.style.height = '52px';
+    ring.style.borderColor = 'var(--purple)';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.width = '12px'; cursor.style.height = '12px';
+    cursor.style.background = 'var(--cyan)';
+    ring.style.width = '36px'; ring.style.height = '36px';
+    ring.style.borderColor = 'var(--cyan)';
+  });
+});
+
+// ═══ PARTICLE TRAIL ═══
+let particleCount = 0;
+function spawnParticle(x, y) {
+  if (particleCount > 12) return;
+  particleCount++;
+  const colors = ['#00F0FF','#C724FF','#FF00AA'];
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const size = Math.random() * 5 + 2;
+  p.style.cssText = `
+    left:${x + (Math.random()-0.5)*20}px;
+    top:${y + (Math.random()-0.5)*20}px;
+    width:${size}px; height:${size}px;
+    background:${colors[Math.floor(Math.random()*3)]};
+    box-shadow:0 0 ${size*2}px ${colors[0]};
+  `;
+  document.body.appendChild(p);
+  setTimeout(() => { p.remove(); particleCount--; }, 800);
+}
+
+// ═══ NAVBAR SCROLL ═══
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ═══ MOBILE MENU ═══
+function toggleMenu() {
+  document.getElementById('mobile-menu').classList.toggle('open');
+}
+
+// ═══ 3D CARD TILT ═══
+document.querySelectorAll('[data-tilt]').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (e.clientX - cx) / (rect.width / 2);
+    const dy = (e.clientY - cy) / (rect.height / 2);
+    card.style.transform = `perspective(800px) rotateY(${dx * 10}deg) rotateX(${-dy * 10}deg) translateZ(10px)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'perspective(800px) rotateY(0) rotateX(0) translateZ(0)';
+  });
+});
+
+// ═══ SCROLL REVEAL ═══
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      const delay = parseFloat(entry.target.style.getPropertyValue('--delay') || '0');
+      setTimeout(() => entry.target.classList.add('visible'), delay * 1000);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+reveals.forEach(el => observer.observe(el));
+
+// ═══════════════════════════════════════
+// THREE.JS SCENE
+// ═══════════════════════════════════════
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x000000, 0);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200);
+  camera.position.set(0, 0, 28);
+
+  // ─── MOUSE PARALLAX ───
+  let mouse = { x: 0, y: 0 };
+  let targetMouse = { x: 0, y: 0 };
+  document.addEventListener('mousemove', e => {
+    targetMouse.x = (e.clientX / window.innerWidth - 0.5) * 2;
+    targetMouse.y = -(e.clientY / window.innerHeight - 0.5) * 2;
+  });
+
+  // ─── MATERIALS ───
+  const matCyan = new THREE.MeshStandardMaterial({
+    color: 0x00F0FF, emissive: 0x00F0FF, emissiveIntensity: 0.6,
+    wireframe: false, transparent: true, opacity: 0.85,
+    roughness: 0.2, metalness: 0.8
+  });
+  const matPurple = new THREE.MeshStandardMaterial({
+    color: 0xC724FF, emissive: 0xC724FF, emissiveIntensity: 0.5,
+    wireframe: false, transparent: true, opacity: 0.8,
+    roughness: 0.2, metalness: 0.8
+  });
+  const matPink = new THREE.MeshStandardMaterial({
+    color: 0xFF00AA, emissive: 0xFF00AA, emissiveIntensity: 0.5,
+    wireframe: false, transparent: true, opacity: 0.8,
+    roughness: 0.2, metalness: 0.8
+  });
+  const matWire = new THREE.MeshBasicMaterial({ color: 0x00F0FF, wireframe: true, transparent: true, opacity: 0.15 });
+  const matWirePurple = new THREE.MeshBasicMaterial({ color: 0xC724FF, wireframe: true, transparent: true, opacity: 0.12 });
+
+  // ─── LIGHTS ───
+  const ambient = new THREE.AmbientLight(0xffffff, 0.3);
+  scene.add(ambient);
+  const pCyan = new THREE.PointLight(0x00F0FF, 2.5, 60);
+  pCyan.position.set(10, 10, 10);
+  scene.add(pCyan);
+  const pPurple = new THREE.PointLight(0xC724FF, 2, 60);
+  pPurple.position.set(-10, -8, 8);
+  scene.add(pPurple);
+  const pPink = new THREE.PointLight(0xFF00AA, 1.5, 50);
+  pPink.position.set(0, 12, -5);
+  scene.add(pPink);
+
+  // ─── SHAPES ───
+  const shapes = [];
+
+  function addShape(geo, mat, x, y, z, rx, ry, rz) {
+    const mesh = new THREE.Mesh(geo, mat.clone());
+    mesh.position.set(x, y, z);
+    mesh.rotation.set(rx, ry, rz);
+    scene.add(mesh);
+    shapes.push({ mesh, baseY: y, speedX: (Math.random() - 0.5) * 0.008, speedY: Math.random() * 0.003 + 0.002, speedZ: (Math.random() - 0.5) * 0.006, floatAmp: Math.random() * 0.8 + 0.3, floatSpeed: Math.random() * 0.5 + 0.3, floatOffset: Math.random() * Math.PI * 2 });
+    return mesh;
+  }
+
+  // Icosahedrons
+  addShape(new THREE.IcosahedronGeometry(2.5, 0), matCyan, -12, 4, -5, 0.5, 0.3, 0);
+  addShape(new THREE.IcosahedronGeometry(1.4, 0), matPurple, 13, -3, -4, 0.2, 0.7, 0.1);
+  addShape(new THREE.IcosahedronGeometry(1.8, 0), matPink, 5, 7, -8, 0.1, 0.4, 0.2);
+  addShape(new THREE.IcosahedronGeometry(1.1, 0), matCyan, -6, -6, -3, 0.8, 0.2, 0.3);
+
+  // Octahedrons
+  addShape(new THREE.OctahedronGeometry(2, 0), matPurple, 8, 5, -6, 0.3, 0.5, 0.1);
+  addShape(new THREE.OctahedronGeometry(1.5, 0), matCyan, -14, -4, -7, 0.6, 0.1, 0.4);
+  addShape(new THREE.OctahedronGeometry(0.9, 0), matPink, 3, -7, -2, 0.1, 0.9, 0.2);
+
+  // Tetrahedrons
+  addShape(new THREE.TetrahedronGeometry(1.8, 0), matPink, -9, 8, -6, 0.4, 0.3, 0.6);
+  addShape(new THREE.TetrahedronGeometry(1.2, 0), matCyan, 14, 6, -5, 0.2, 0.6, 0.1);
+
+  // Torus
+  addShape(new THREE.TorusGeometry(2.5, 0.15, 8, 40), matCyan, 0, 8, -10, 1.2, 0.3, 0);
+  addShape(new THREE.TorusGeometry(1.8, 0.12, 6, 30), matPurple, -11, 2, -6, 0.5, 1.0, 0.2);
+  addShape(new THREE.TorusGeometry(1.2, 0.09, 6, 24), matPink, 10, -6, -5, 0.8, 0.4, 0.5);
+
+  // Wireframe overlays
+  addShape(new THREE.IcosahedronGeometry(2.52, 0), matWire, -12, 4, -5, 0.5, 0.3, 0);
+  addShape(new THREE.OctahedronGeometry(2.02, 0), matWirePurple, 8, 5, -6, 0.3, 0.5, 0.1);
+
+  // Box
+  addShape(new THREE.BoxGeometry(1.8, 1.8, 1.8), matPurple, -3, 10, -9, 0.5, 0.3, 0.2);
+  addShape(new THREE.BoxGeometry(1.2, 1.2, 1.2), matCyan, 16, 0, -7, 0.1, 0.7, 0.3);
+
+  // ─── PARTICLES ───
+  const PARTICLE_COUNT = 600;
+  const positions = new Float32Array(PARTICLE_COUNT * 3);
+  const colors = new Float32Array(PARTICLE_COUNT * 3);
+  const pColors = [[0, 0.94, 1], [0.78, 0.14, 1], [1, 0, 0.67]];
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    positions[i*3]   = (Math.random() - 0.5) * 80;
+    positions[i*3+1] = (Math.random() - 0.5) * 60;
+    positions[i*3+2] = (Math.random() - 0.5) * 40 - 10;
+    const c = pColors[Math.floor(Math.random() * 3)];
+    colors[i*3] = c[0]; colors[i*3+1] = c[1]; colors[i*3+2] = c[2];
+  }
+  const pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  pGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  const pMat = new THREE.PointsMaterial({ size: 0.15, vertexColors: true, transparent: true, opacity: 0.7, sizeAttenuation: true });
+  const particles = new THREE.Points(pGeo, pMat);
+  scene.add(particles);
+
+  // ─── ORBITING RINGS ───
+  const ringGroup = new THREE.Group();
+  const ring1 = new THREE.Mesh(new THREE.TorusGeometry(12, 0.05, 4, 80), new THREE.MeshBasicMaterial({ color: 0x00F0FF, transparent: true, opacity: 0.18 }));
+  ring1.rotation.x = Math.PI / 2.5;
+  ringGroup.add(ring1);
+  const ring2 = new THREE.Mesh(new THREE.TorusGeometry(16, 0.04, 4, 80), new THREE.MeshBasicMaterial({ color: 0xC724FF, transparent: true, opacity: 0.12 }));
+  ring2.rotation.x = Math.PI / 3;
+  ring2.rotation.y = Math.PI / 4;
+  ringGroup.add(ring2);
+  const ring3 = new THREE.Mesh(new THREE.TorusGeometry(20, 0.03, 4, 80), new THREE.MeshBasicMaterial({ color: 0xFF00AA, transparent: true, opacity: 0.08 }));
+  ring3.rotation.x = Math.PI / 1.8;
+  ring3.rotation.z = Math.PI / 6;
+  ringGroup.add(ring3);
+  ringGroup.position.set(0, 0, -8);
+  scene.add(ringGroup);
+
+  // ─── RESIZE ───
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    
-    // Controls
-    const controls = new OrbitControls(camera, canvas);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.enableZoom = false;
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = 0.3;
-    
-    // Demo data for planets
-    const demos = [
-      { name: 'Zen Yoga', color: '#2d5a4a', price: 150 },
-      { name: 'Ace Tutor', color: '#1e3a5f', price: 200 },
-      { name: 'Glow Salon', color: '#5a2d5a', price: 250 },
-      { name: 'Powerfit Gym', color: '#8b2a2a', price: 400 },
-      { name: 'Lotus Yoga', color: '#4a3d6b', price: 400 },
-      { name: 'Elite Gym', color: '#2a4a2a', price: 400 },
-      { name: 'Fitness Demo', color: '#3d3d3d', price: 150 }
-    ];
-    
-    // Create solar system
-    const solarGroup = new THREE.Group();
-    scene.add(solarGroup);
-    
-    // Central orb
-    const coreGeometry = new THREE.IcosahedronGeometry(5, 2);
-    const coreMaterial = new THREE.MeshBasicMaterial({
-      color: 0x00ffd5,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.6
+  });
+
+  // ─── ANIMATE ───
+  const clock = new THREE.Clock();
+  function animate() {
+    requestAnimationFrame(animate);
+    const t = clock.getElapsedTime();
+
+    mouse.x += (targetMouse.x - mouse.x) * 0.04;
+    mouse.y += (targetMouse.y - mouse.y) * 0.04;
+
+    camera.position.x = mouse.x * 2.5;
+    camera.position.y = mouse.y * 1.5;
+    camera.lookAt(0, 0, 0);
+
+    shapes.forEach(s => {
+      s.mesh.rotation.x += s.speedX;
+      s.mesh.rotation.y += s.speedY;
+      s.mesh.rotation.z += s.speedZ;
+      s.mesh.position.y = s.baseY + Math.sin(t * s.floatSpeed + s.floatOffset) * s.floatAmp;
     });
-    const core = new THREE.Mesh(coreGeometry, coreMaterial);
-    solarGroup.add(core);
-    
-    // Inner glow
-    const glowGeometry = new THREE.SphereGeometry(6, 32, 32);
-    const glowMaterial = new THREE.MeshBasicMaterial({
-      color: 0x00ffd5,
-      transparent: true,
-      opacity: 0.15
-    });
-    const glow = new THREE.Mesh(glowGeometry, glowMaterial);
-    solarGroup.add(glow);
-    
-    // Planet orbits and planets
-    const planets = [];
-    const orbits = [];
-    
-    demos.forEach((demo, i) => {
-      const angle = (i / demos.length) * Math.PI * 2;
-      const radius = 15 + (i % 2) * 5;
-      
-      // Orbit ring
-      const orbitGeometry = new THREE.RingGeometry(radius - 0.1, radius + 0.1, 64);
-      const orbitMaterial = new THREE.MeshBasicMaterial({
-        color: 0x00ffd5,
-        transparent: true,
-        opacity: 0.1,
-        side: THREE.DoubleSide
-      });
-      const orbit = new THREE.Mesh(orbitGeometry, orbitMaterial);
-      orbit.rotation.x = -Math.PI / 2;
-      solarGroup.add(orbit);
-      orbits.push(orbit);
-      
-      // Planet
-      const planetGeometry = new THREE.IcosahedronGeometry(2, 1);
-      const planetMaterial = new THREE.MeshBasicMaterial({
-        color: new THREE.Color(demo.color),
-        wireframe: true
-      });
-      const planet = new THREE.Mesh(planetGeometry, planetMaterial);
-      
-      // Create group for orbit animation
-      const planetGroup = new THREE.Group();
-      planet.position.x = radius;
-      planetGroup.add(planet);
-      planetGroup.rotation.y = angle;
-      solarGroup.add(planetGroup);
-      
-      planets.push({ mesh: planet, group: planetGroup, demo, radius, baseAngle: angle });
-    });
-    
-    // Particle field
-    const particleCount = 400;
-    const particleGeometry = new THREE.BufferGeometry();
-    const particlePositions = new Float32Array(particleCount * 3);
-    const particleSizes = new Float32Array(particleCount);
-    
-    for (let i = 0; i < particleCount; i++) {
-      const i3 = i * 3;
-      particlePositions[i3] = (Math.random() - 0.5) * 200;
-      particlePositions[i3 + 1] = (Math.random() - 0.5) * 200;
-      particlePositions[i3 + 2] = (Math.random() - 0.5) * 200;
-      particleSizes[i] = Math.random() * 2 + 0.5;
-    }
-    
-    particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-    particleGeometry.setAttribute('aSize', new THREE.BufferAttribute(particleSizes, 1));
-    
-    const particleMaterial = new THREE.PointsMaterial({
-      color: 0x00ffd5,
-      size: 0.5,
-      transparent: true,
-      opacity: 0.6,
-      sizeAttenuation: true
-    });
-    
-    const particles = new THREE.Points(particleGeometry, particleMaterial);
-    scene.add(particles);
-    
-    // Floating orbs for pricing section
-    const orbGroup = new THREE.Group();
-    scene.add(orbGroup);
-    
-    const prices = [100, 200, 400, 500];
-    const priceOrbs = [];
-    
-    prices.forEach((price, i) => {
-      const orbGeometry = new THREE.SphereGeometry(3 + i * 0.5, 32, 32);
-      const orbMaterial = new THREE.MeshBasicMaterial({
-        color: i === 2 ? 0xffb800 : 0x00ffd5,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.5
-      });
-      const orb = new THREE.Mesh(orbGeometry, orbMaterial);
-      orb.position.set(-30 + i * 20, -80, 0);
-      orb.userData = { price, originalY: orb.position.y };
-      orbGroup.add(orb);
-      priceOrbs.push(orb);
-    });
-    
-    // Testimonial bubbles
-    const bubbleGroup = new THREE.Group();
-    scene.add(bubbleGroup);
-    
-    const bubbles = [];
-    for (let i = 0; i < 15; i++) {
-      const bubbleGeometry = new THREE.SphereGeometry(Math.random() * 2 + 1, 16, 16);
-      const bubbleMaterial = new THREE.MeshBasicMaterial({
-        color: Math.random() > 0.5 ? 0x00ffd5 : 0xffb800,
-        transparent: true,
-        opacity: 0.3
-      });
-      const bubble = new THREE.Mesh(bubbleGeometry, bubbleMaterial);
-      bubble.position.set(
-        (Math.random() - 0.5) * 100,
-        -150 + Math.random() * 50,
-        (Math.random() - 0.5) * 50
-      );
-      bubble.userData = { speed: Math.random() * 0.5 + 0.2, originalY: bubble.position.y };
-      bubbleGroup.add(bubble);
-      bubbles.push(bubble);
-    }
-    
-    // WhatsApp portal in CTA section
-    const portalGroup = new THREE.Group();
-    scene.add(portalGroup);
-    
-    const portalGeometry = new THREE.TorusGeometry(8, 1, 16, 100);
-    const portalMaterial = new THREE.MeshBasicMaterial({
-      color: 0x25d366,
-      transparent: true,
-      opacity: 0.7
-    });
-    const portal = new THREE.Mesh(portalGeometry, portalMaterial);
-    portal.position.y = -250;
-    portalGroup.add(portal);
-    
-    // Portal inner glow
-    const portalInnerGeometry = new THREE.CircleGeometry(7, 32);
-    const portalInnerMaterial = new THREE.MeshBasicMaterial({
-      color: 0x25d366,
-      transparent: true,
-      opacity: 0.2
-    });
-    const portalInner = new THREE.Mesh(portalInnerGeometry, portalInnerMaterial);
-    portalInner.position.y = -250;
-    portalGroup.add(portalInner);
-    
-    // Mouse interaction
-    let mouseX = 0;
-    let mouseY = 0;
-    let targetX = 0;
-    let targetY = 0;
-    
-    document.addEventListener('mousemove', (e) => {
-      mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-      mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-    });
-    
-    // Touch support
-    document.addEventListener('touchmove', (e) => {
-      if (e.touches.length > 0) {
-        mouseX = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
-        mouseY = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
-      }
-    });
-    
-    // Scroll handling
-    let scrollY = 0;
-    window.addEventListener('scroll', () => {
-      scrollY = window.scrollY;
-    });
-    
-    // Animation
-    const clock = new THREE.Clock();
-    
-    function animate() {
-      requestAnimationFrame(animate);
-      
-      const elapsed = clock.getElapsedTime();
-      
-      // Smooth mouse follow
-      targetX += (mouseX - targetX) * 0.05;
-      targetY += (mouseY - targetY) * 0.05;
-      
-      // Rotate solar system based on scroll
-      const scrollProgress = scrollY / (document.body.scrollHeight - window.innerHeight);
-      solarGroup.position.y = Math.max(0, 20 - scrollY * 0.02);
-      solarGroup.scale.setScalar(Math.max(0.5, 1 - scrollProgress * 0.5));
-      
-      // Core animation
-      core.rotation.x = elapsed * 0.3;
-      core.rotation.y = elapsed * 0.2;
-      glow.scale.setScalar(1 + Math.sin(elapsed * 2) * 0.1);
-      
-      // Planet orbits
-      planets.forEach((planet, i) => {
-        planet.group.rotation.y = planet.baseAngle + elapsed * (0.2 + i * 0.05);
-        planet.mesh.rotation.x = elapsed * 0.5;
-        planet.mesh.rotation.y = elapsed * 0.3;
-      });
-      
-      // Particle rotation
-      particles.rotation.y = elapsed * 0.02;
-      particles.rotation.x = targetY * 0.1;
-      
-      // Price orbs float
-      priceOrbs.forEach((orb, i) => {
-        orb.position.y = orb.userData.originalY + Math.sin(elapsed + i) * 5;
-        orb.rotation.x = elapsed * 0.3;
-        orb.rotation.y = elapsed * 0.2;
-      });
-      
-      // Bubbles rise
-      bubbles.forEach((bubble) => {
-        bubble.position.y += bubble.userData.speed * 0.1;
-        if (bubble.position.y > 100) {
-          bubble.position.y = bubble.userData.originalY;
-        }
-      });
-      
-      // Portal rotation
-      portal.rotation.z = elapsed;
-      portalInner.material.opacity = 0.2 + Math.sin(elapsed * 3) * 0.1;
-      
-      // Camera position based on scroll
-      camera.position.z = 50 + scrollProgress * 20;
-      camera.position.x = targetX * 10;
-      camera.position.y = -scrollProgress * 100 + targetY * 5;
-      
-      controls.update();
-      renderer.render(scene, camera);
-    }
-    
-    // Resize handler
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-    
-    // Start animation
-    animate();
-    
-    // Hide loader
-    setTimeout(() => {
-      loader.classList.add('hidden');
-    }, 500);
-    
-    // Stats counter animation
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const statNums = entry.target.querySelectorAll('.stat-num[data-count]');
-          statNums.forEach(num => {
-            const target = parseInt(num.dataset.count);
-            const suffix = num.dataset.suffix || '';
-            let current = 0;
-            const increment = target / 50;
-            const timer = setInterval(() => {
-              current += increment;
-              if (current >= target) {
-                current = target;
-                clearInterval(timer);
-              }
-              num.textContent = Math.floor(current) + suffix;
-            }, 30);
-          });
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.5 });
-    
-    const statsSection = document.getElementById('stats');
-    if (statsSection) observer.observe(statsSection);
-    
-    // Card hover effects
-    document.querySelectorAll('.demo-card').forEach(card => {
-      card.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-10px) scale(1.02)';
-      });
-      card.addEventListener('mouseleave', function() {
-        this.style.transform = '';
-      });
-    });
-  </script>
-  
-  <!-- Tidio Chat Widget -->
-  <script src="//code.tidio.co/4dnx6uqdg3k5g0ib31dui3oqcbnrsgdp.js" async></script>
+
+    particles.rotation.y = t * 0.015;
+    particles.rotation.x = t * 0.005;
+
+    ringGroup.rotation.y = t * 0.04;
+    ringGroup.rotation.x = Math.sin(t * 0.02) * 0.05;
+
+    pCyan.position.x = Math.sin(t * 0.5) * 15;
+    pCyan.position.y = Math.cos(t * 0.3) * 10;
+    pPurple.position.x = Math.cos(t * 0.4) * 12;
+    pPurple.position.y = Math.sin(t * 0.6) * 8;
+
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+
+// ═══ PING KEYFRAME ═══
+const style = document.createElement('style');
+style.textContent = `
+@keyframes ping {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.8); opacity: 0.4; }
+}`;
+document.head.appendChild(style);
+</script>
+
 </body>
 </html>
